@@ -8,6 +8,13 @@
 
 import Cocoa
 
+
+struct Repository {
+    static var defaultFolderPathString              =   ""
+    static var defaultFolderPathURL                 =   URL(string: "default_folder_path")
+}
+
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -15,6 +22,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // private var window: NSWindow!
     
     private var statusItem: NSStatusItem!
+    
+    private var startButton: NSMenuItem!
+    private var watchButton: NSMenuItem!
+    
+    private var recordingFlag: Bool!
+    
+    private var timeInterval = 10.0
+    
+    private var takingScreenshotsTimer = Timer()
+    
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
@@ -35,50 +52,140 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //            button.image = NSImage(pasteboardPropertyList: "1.circle", ofType: NSPasteboard.PasteboardType(rawValue: "1"))
             
         }
+        // obtain and set default folder to save screenshots
+        let defaultFolderPathString = getHomePath() + "/Documents/" + "TimeLapseVideo/Screenshots/"
+        Repository.defaultFolderPathString = defaultFolderPathString
+        Repository.defaultFolderPathURL = URL(string: defaultFolderPathString)
         
+        
+        // create a default folder for saving screenshots
+        checkDefaultFolder(folderPath: defaultFolderPathString)
+        
+        // take a testing screenshot while launching the application for asking request
+        // takeTestingImage()
+        // deleteTestingImage()
+        
+        // set up the menu on menu bar
         setupMenus()
+        
+        // set the recorind flag
+        recordingFlag = false
     
     }
     
+    // function to creat the menu bar app's menu
     func setupMenus() {
-        // 1
+
         let menu = NSMenu()
 
-        // 2
-        let one = NSMenuItem(title: "One", action: #selector(didTapOne) , keyEquivalent: "1")
-        menu.addItem(one)
+        startButton = NSMenuItem(title: "Start Recording", action: #selector(didTapOne) , keyEquivalent: "1")
+        menu.addItem(startButton)
 
-        let two = NSMenuItem(title: "Two", action: #selector(didTapTwo) , keyEquivalent: "2")
-        menu.addItem(two)
-
-        let three = NSMenuItem(title: "Three", action: #selector(didTapThree) , keyEquivalent: "3")
-        menu.addItem(three)
+        watchButton = NSMenuItem(title: "Watch Time-Lapse Video", action: #selector(didTapTwo) , keyEquivalent: "2")
+        menu.addItem(watchButton)
 
         menu.addItem(NSMenuItem.separator())
 
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
-        // 3
         statusItem.menu = menu
-    }
-    private func changeStatusBarButton(number: Int) {
-        if let button = statusItem.button {
-            button.image = NSImage(pasteboardPropertyList: "\(number).circle", ofType: NSPasteboard.PasteboardType(rawValue: number.description))
-        }
     }
     
     @objc func didTapOne() {
-        changeStatusBarButton(number: 1)
+        
+        let startButtonTitle = startButton.title
+        if (startButtonTitle == "Start Recording"){
+            startButton.title = "Stop Recording"
+            
+            // set the recording flag to true
+            recordingFlag = true
+            let takeScreenshotsObject = takeScreenshots()
+            takeScreenshotsObject.creatFolderForTodayRecording()
+            
+            takeScreenshotsObject.takeANewScreenshot()
+            
+            // not taking a ascreenshot at the time when click this button
+            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
+                takeScreenshotsObject.takeANewScreenshot()
+            })
+            
+        }else {
+            startButton.title = "Start Recording"
+            // set the recording flag to false
+            recordingFlag = false
+            
+            // stop the timer
+            self.takingScreenshotsTimer.invalidate()
+        }
+        
+        print("tapped record button.")
+        
     }
 
     @objc func didTapTwo() {
-        changeStatusBarButton(number: 2)
+        print("tapped watch button.")
+    }
+    
+    // function to return the computer's home path
+    func getHomePath() -> String{
+        let pw = getpwuid(getuid())
+        let home = pw?.pointee.pw_dir
+        let homePath = FileManager.default.string(withFileSystemRepresentation: home!, length: Int(strlen(home!)))
+        return homePath
+    }
+    
+    // function to creat default folder for saving screenshots
+    func checkDefaultFolder(folderPath : String) {
+        if FileManager.default.fileExists(atPath: folderPath){
+            print("default is already existed!")
+        }
+        else {
+            do {
+                try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
+                print(folderPath)
+                print("default folder created successfully!")
+            } catch {
+                print("default folder created failed!")
+                print(error)
+            }
+        }
+
+    }
+    
+    // function to take a test screenshot for asking premission
+    func takeTestingImage(){
+        let task = Process()
+        task.launchPath = "/usr/sbin/screencapture"
+        var arguments = [String]();
+        arguments.append("-x")
+
+        arguments.append(Repository.defaultFolderPathString + "Testing.jpg")
+        task.arguments = arguments
+
+        let outpipe = Pipe()
+        task.standardOutput = outpipe
+        task.standardError = outpipe
+         do {
+           try task.run()
+         } catch {}
+        
+        task.waitUntilExit()
+        print("taking a test image is finished")
+    }
+    
+    // funcitno to delete the test screenshot
+    func deleteTestingImage(){
+        let path = Repository.defaultFolderPathString  + "Testing.jpg"
+        do {
+          try FileManager.default.removeItem(atPath: path)
+        } catch{
+            print("error iin delete the testing image: \(error)")
+        }
+        
     }
 
-    @objc func didTapThree() {
-        changeStatusBarButton(number: 3)
-    }
 
+    // function to quit the menu bar application
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA0383382941427000FAC0A0 /* ScreenshotInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */; };
+		EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0383392941439300FAC0A0 /* takeScreenshot.swift */; };
+		EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */; };
+		EA03833E29415DE300FAC0A0 /* watchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03833D29415DE300FAC0A0 /* watchView.swift */; };
 		EAF1010228D12BAE00065763 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010128D12BAE00065763 /* AppDelegate.swift */; };
 		EAF1010428D12BAE00065763 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010328D12BAE00065763 /* ViewController.swift */; };
 		EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010528D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld */; };
@@ -26,6 +30,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotInfo.swift; sourceTree = "<group>"; };
+		EA0383392941439300FAC0A0 /* takeScreenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = takeScreenshot.swift; sourceTree = "<group>"; };
+		EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagesToVideo.swift; sourceTree = "<group>"; };
+		EA03833D29415DE300FAC0A0 /* watchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watchView.swift; sourceTree = "<group>"; };
 		EAF100FE28D12BAE00065763 /* TimeLapseVideoProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLapseVideoProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAF1010128D12BAE00065763 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EAF1010328D12BAE00065763 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -85,6 +93,10 @@
 				EAF1010D28D12BB600065763 /* Info.plist */,
 				EAF1010E28D12BB600065763 /* TimeLapseVideoProject.entitlements */,
 				EAF1010528D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld */,
+				EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */,
+				EA0383392941439300FAC0A0 /* takeScreenshot.swift */,
+				EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */,
+				EA03833D29415DE300FAC0A0 /* watchView.swift */,
 			);
 			path = TimeLapseVideoProject;
 			sourceTree = "<group>";
@@ -198,8 +210,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA03833E29415DE300FAC0A0 /* watchView.swift in Sources */,
 				EAF1010428D12BAE00065763 /* ViewController.swift in Sources */,
+				EA0383382941427000FAC0A0 /* ScreenshotInfo.swift in Sources */,
 				EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */,
+				EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */,
+				EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */,
 				EAF1010228D12BAE00065763 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
