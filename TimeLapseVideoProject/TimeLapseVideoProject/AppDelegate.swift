@@ -124,6 +124,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func didTapTwo() {
         print("tapped watch button.")
+        
+        
+        var mainWindowController: videoWatchWindow?
+        mainWindowController = videoWatchWindow()
+        mainWindowController?.showWindow(nil)
+        mainWindowController?.window?.level = .mainMenu + 1
+        
     }
     
     // function to return the computer's home path
