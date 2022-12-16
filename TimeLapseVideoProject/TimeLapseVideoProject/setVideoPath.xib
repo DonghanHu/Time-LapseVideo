@@ -8,6 +8,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="setVideoPath" customModule="TimeLapseVideoProject" customModuleProvider="target">
             <connections>
+                <outlet property="folderPathLabel" destination="4lS-Gn-QHS" id="7SJ-bl-XGx"/>
+                <outlet property="okDoNothingButton" destination="M7M-B9-eyE" id="iMQ-CC-pQM"/>
                 <outlet property="setFolderPathButton" destination="eof-eI-ieH" id="tPY-RP-u1F"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
@@ -32,6 +34,26 @@
                         </buttonCell>
                         <connections>
                             <action selector="setFolderPathAction:" target="-2" id="KVf-w3-I2k"/>
+                        </connections>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4lS-Gn-QHS">
+                        <rect key="frame" x="79" y="142" width="323" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="clipping" borderStyle="border" title="Label" drawsBackground="YES" id="VMQ-Tp-onN">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M7M-B9-eyE">
+                        <rect key="frame" x="193" y="51" width="94" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wkX-Pm-UBU">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="okDoNothingAction:" target="-2" id="UER-Kg-bSE"/>
                         </connections>
                     </button>
                 </subviews>

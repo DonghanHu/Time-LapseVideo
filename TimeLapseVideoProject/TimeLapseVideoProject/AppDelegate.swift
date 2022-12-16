@@ -10,8 +10,13 @@ import Cocoa
 
 
 struct Repository {
+    // folder to save screenshots based on date
     static var defaultFolderPathString              =   ""
     static var defaultFolderPathURL                 =   URL(string: "default_folder_path")
+    
+    // folder to save generated time-lapse videos
+    static var downloadingVideosFolderPathString    =   "default video downloading folder path"
+    static var downloadingVideosFolderPathURL       =   URL(string: "default_downloading_folder_path")
 }
 
 
@@ -32,6 +37,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var timeInterval = 10.0
     
     private var takingScreenshotsTimer = Timer()
+    
+    
+    private var setVideoDownloadingPathWindowController: setVideoPath?
     
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -139,27 +147,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func didTapThree() {
         print("tapped save folder path.")
         
-//        var mainWindowController: setVideoPath?
-//        mainWindowController = setVideoPath()
-//        mainWindowController?.showWindow(nil)
-//        mainWindowController?.window?.level = .mainMenu + 1
-        let panel = NSOpenPanel()
-        var folderPath = "FolderPath"
-        let defaultErrorString = "empty url for folder path"
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        if (panel.runModal() ==  NSApplication.ModalResponse.OK) {
-            folderPath = panel.url?.absoluteString ?? defaultErrorString
-            
-            print("final path is set as: " + folderPath)
-            if(folderPath != defaultErrorString){
-                alertDialogClass().confirmIsReady(question: "Q", text: "T")
-            }
-        } else {
-            // User clicked on "Cancel"
-            return
-        }
+//
+        
+        setVideoDownloadingPathWindowController = setVideoPath()
+        setVideoDownloadingPathWindowController?.showWindow(self)
+        setVideoDownloadingPathWindowController?.window?.level = .mainMenu + 1
+
     }
     
     // function to return the computer's home path
