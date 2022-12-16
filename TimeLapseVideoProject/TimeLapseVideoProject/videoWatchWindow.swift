@@ -24,11 +24,11 @@ class videoWatchWindow: NSWindowController{
         print("watch time-lapse video window")
 
         
-        let settings = RenderSettings()
-        let imageAnimator = ImageAnimator(renderSettings: settings)
-        imageAnimator.render() {
-            print("yes")
-        }
+//        let settings = RenderSettings()
+//        let imageAnimator = ImageAnimator(renderSettings: settings)
+//        imageAnimator.render() {
+//            print("yes")
+//        }
         
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     }

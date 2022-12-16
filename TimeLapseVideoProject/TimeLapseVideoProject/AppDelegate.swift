@@ -25,6 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     private var startButton: NSMenuItem!
     private var watchButton: NSMenuItem!
+    private var saveFolderButton: NSMenuItem!
     
     private var recordingFlag: Bool!
     
@@ -81,9 +82,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         startButton = NSMenuItem(title: "Start Recording", action: #selector(didTapOne) , keyEquivalent: "1")
         menu.addItem(startButton)
 
-        watchButton = NSMenuItem(title: "Watch Time-Lapse Video", action: #selector(didTapTwo) , keyEquivalent: "2")
+        watchButton = NSMenuItem(title: "Generate Time-Lapse Video", action: #selector(didTapTwo) , keyEquivalent: "2")
         menu.addItem(watchButton)
-
+        
+        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
+        menu.addItem(saveFolderButton)
+        
         menu.addItem(NSMenuItem.separator())
 
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -125,12 +129,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func didTapTwo() {
         print("tapped watch button.")
         
-        
         var mainWindowController: videoWatchWindow?
         mainWindowController = videoWatchWindow()
         mainWindowController?.showWindow(nil)
         mainWindowController?.window?.level = .mainMenu + 1
         
+    }
+    
+    @objc func didTapThree() {
+        print("tapped save folder path.")
+        
+//        var mainWindowController: setVideoPath?
+//        mainWindowController = setVideoPath()
+//        mainWindowController?.showWindow(nil)
+//        mainWindowController?.window?.level = .mainMenu + 1
+        let panel = NSOpenPanel()
+        var folderPath = "FolderPath"
+        let defaultErrorString = "empty url for folder path"
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        if (panel.runModal() ==  NSApplication.ModalResponse.OK) {
+            folderPath = panel.url?.absoluteString ?? defaultErrorString
+            
+            print("final path is set as: " + folderPath)
+            if(folderPath != defaultErrorString){
+                alertDialogClass().confirmIsReady(question: "Q", text: "T")
+            }
+        } else {
+            // User clicked on "Cancel"
+            return
+        }
     }
     
     // function to return the computer's home path

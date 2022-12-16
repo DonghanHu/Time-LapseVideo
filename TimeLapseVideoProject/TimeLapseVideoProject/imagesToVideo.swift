@@ -28,8 +28,6 @@ struct RenderSettings {
         // Using the CachesDirectory ensures the file won't be included in a backup of the app.
         let fileManager = FileManager.default
         if let tmpDirURL = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
-            let tmpDirString = (try? String(contentsOf: tmpDirURL)) ?? "caches directory aquired fail"
-            print("caches path is: " + tmpDirString)
             return tmpDirURL.appendingPathComponent(videoFilename).appendingPathExtension(videoFilenameExt)
         }
         fatalError("URLForDirectory() failed")
@@ -58,7 +56,7 @@ class ImageAnimator {
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
             }) { success, error in
                 if !success {
-                    print("Could not save video to photo library:", error)
+                    print("Could not save video to photo library:", Error.self)
                 }
             }
         }

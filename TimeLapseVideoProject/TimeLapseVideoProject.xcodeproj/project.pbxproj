@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA00F620294D227800D54360 /* setVideoPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA00F61E294D227800D54360 /* setVideoPath.swift */; };
+		EA00F621294D227800D54360 /* setVideoPath.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA00F61F294D227800D54360 /* setVideoPath.xib */; };
+		EA00F623294D254300D54360 /* alertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA00F622294D254300D54360 /* alertDialog.swift */; };
 		EA0383382941427000FAC0A0 /* ScreenshotInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */; };
 		EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0383392941439300FAC0A0 /* takeScreenshot.swift */; };
 		EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */; };
@@ -31,6 +34,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EA00F61E294D227800D54360 /* setVideoPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setVideoPath.swift; sourceTree = "<group>"; };
+		EA00F61F294D227800D54360 /* setVideoPath.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = setVideoPath.xib; sourceTree = "<group>"; };
+		EA00F622294D254300D54360 /* alertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = alertDialog.swift; sourceTree = "<group>"; };
 		EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotInfo.swift; sourceTree = "<group>"; };
 		EA0383392941439300FAC0A0 /* takeScreenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = takeScreenshot.swift; sourceTree = "<group>"; };
 		EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagesToVideo.swift; sourceTree = "<group>"; };
@@ -88,6 +94,7 @@
 		EAF1010028D12BAE00065763 /* TimeLapseVideoProject */ = {
 			isa = PBXGroup;
 			children = (
+				EA00F622294D254300D54360 /* alertDialog.swift */,
 				EAF1010128D12BAE00065763 /* AppDelegate.swift */,
 				EAF1010328D12BAE00065763 /* ViewController.swift */,
 				EAF1010828D12BB600065763 /* Assets.xcassets */,
@@ -100,6 +107,8 @@
 				EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */,
 				EA03834329427D4400FAC0A0 /* videoWatchWindow.swift */,
 				EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */,
+				EA00F61E294D227800D54360 /* setVideoPath.swift */,
+				EA00F61F294D227800D54360 /* setVideoPath.xib */,
 			);
 			path = TimeLapseVideoProject;
 			sourceTree = "<group>";
@@ -195,6 +204,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EAF1010928D12BB600065763 /* Assets.xcassets in Resources */,
+				EA00F621294D227800D54360 /* setVideoPath.xib in Resources */,
 				EAF1010C28D12BB600065763 /* Main.storyboard in Resources */,
 				EA03834629427D4400FAC0A0 /* videoWatchWindow.xib in Resources */,
 			);
@@ -214,11 +224,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA00F623294D254300D54360 /* alertDialog.swift in Sources */,
 				EAF1010428D12BAE00065763 /* ViewController.swift in Sources */,
 				EA0383382941427000FAC0A0 /* ScreenshotInfo.swift in Sources */,
 				EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */,
 				EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */,
 				EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */,
+				EA00F620294D227800D54360 /* setVideoPath.swift in Sources */,
 				EAF1010228D12BAE00065763 /* AppDelegate.swift in Sources */,
 				EA03834529427D4400FAC0A0 /* videoWatchWindow.swift in Sources */,
 			);
