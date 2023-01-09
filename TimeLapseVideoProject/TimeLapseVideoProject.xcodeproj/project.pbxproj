@@ -15,6 +15,9 @@
 		EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */; };
 		EA03834529427D4400FAC0A0 /* videoWatchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03834329427D4400FAC0A0 /* videoWatchWindow.swift */; };
 		EA03834629427D4400FAC0A0 /* videoWatchWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */; };
+		EAD8B195296BD905002008C8 /* ffmpeg-5.1.2.7z in Resources */ = {isa = PBXBuildFile; fileRef = EAD8B194296BD905002008C8 /* ffmpeg-5.1.2.7z */; };
+		EAD8B197296BE3BF002008C8 /* ffmpegFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */; };
+		EAD8B199296BE899002008C8 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = EAD8B198296BE899002008C8 /* ffmpeg */; };
 		EAF1010228D12BAE00065763 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010128D12BAE00065763 /* AppDelegate.swift */; };
 		EAF1010428D12BAE00065763 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010328D12BAE00065763 /* ViewController.swift */; };
 		EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EAF1010528D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld */; };
@@ -42,6 +45,9 @@
 		EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagesToVideo.swift; sourceTree = "<group>"; };
 		EA03834329427D4400FAC0A0 /* videoWatchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = videoWatchWindow.swift; sourceTree = "<group>"; };
 		EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = videoWatchWindow.xib; sourceTree = "<group>"; };
+		EAD8B194296BD905002008C8 /* ffmpeg-5.1.2.7z */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ffmpeg-5.1.2.7z"; sourceTree = "<group>"; };
+		EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ffmpegFunctions.swift; sourceTree = "<group>"; };
+		EAD8B198296BE899002008C8 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
 		EAF100FE28D12BAE00065763 /* TimeLapseVideoProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLapseVideoProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAF1010128D12BAE00065763 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EAF1010328D12BAE00065763 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -73,9 +79,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EAD8B191296BD6D8002008C8 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				EAD8B198296BE899002008C8 /* ffmpeg */,
+				EAD8B194296BD905002008C8 /* ffmpeg-5.1.2.7z */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
 		EAF100F528D12BAE00065763 = {
 			isa = PBXGroup;
 			children = (
+				EAD8B191296BD6D8002008C8 /* Packages */,
 				EAF1010028D12BAE00065763 /* TimeLapseVideoProject */,
 				EAF1011628D12BB600065763 /* TimeLapseVideoProjectTests */,
 				EAF100FF28D12BAE00065763 /* Products */,
@@ -109,6 +125,7 @@
 				EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */,
 				EA00F61E294D227800D54360 /* setVideoPath.swift */,
 				EA00F61F294D227800D54360 /* setVideoPath.xib */,
+				EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */,
 			);
 			path = TimeLapseVideoProject;
 			sourceTree = "<group>";
@@ -203,6 +220,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAD8B199296BE899002008C8 /* ffmpeg in Resources */,
+				EAD8B195296BD905002008C8 /* ffmpeg-5.1.2.7z in Resources */,
 				EAF1010928D12BB600065763 /* Assets.xcassets in Resources */,
 				EA00F621294D227800D54360 /* setVideoPath.xib in Resources */,
 				EAF1010C28D12BB600065763 /* Main.storyboard in Resources */,
@@ -230,6 +249,7 @@
 				EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */,
 				EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */,
 				EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */,
+				EAD8B197296BE3BF002008C8 /* ffmpegFunctions.swift in Sources */,
 				EA00F620294D227800D54360 /* setVideoPath.swift in Sources */,
 				EAF1010228D12BAE00065763 /* AppDelegate.swift in Sources */,
 				EA03834529427D4400FAC0A0 /* videoWatchWindow.swift in Sources */,

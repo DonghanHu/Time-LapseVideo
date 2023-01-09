@@ -55,8 +55,8 @@ class takeScreenshots{
         }
     }
     
-    // function to take a screenshot with customsized arguments
-    func takeANewScreenshot(){
+    // function to take a screenshot with customsized arguments with formatted date name
+    func takeANewScreenshotWithFormattedDateName(){
         
         let date = Date()
         let dateFormatter = DateFormatter()
@@ -90,6 +90,52 @@ class takeScreenshots{
         
         // wait until task is finished and exit
         task.waitUntilExit()
+        
+    }
+    
+    // function to take a screenshot with increasing counter in names based changing daily
+    func takeANewScreenshotWithIncreadingCounter(){
+        // get  current date
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYYMMdd"
+        let dateString = dateFormatter.string(from: date)
+        
+        // generate new file name with "FRAME" ahead as an identifier
+        // add counter indicating order
+
+        let counterString = String(format: "%08d", DailyCounter.counter)
+        let screenshotName = "FRAME" + String(DailyCounter.counter)
+        
+        let task = Process()
+        task.launchPath = "/usr/sbin/screencapture"
+        var arguments = [String]();
+        arguments.append("-x")
+        
+        let tempScreenshotPerPathString = tempFolderPathString + "/" + dateString + ".jpg"
+        arguments.append(tempScreenshotPerPathString)
+        
+        print("screenshot path: " + tempScreenshotPerPathString)
+        
+        task.arguments = arguments
+        
+        let outpipe = Pipe()
+        task.standardOutput = outpipe
+        task.standardError = outpipe
+        
+        do {
+            try task.run()
+            
+        } catch {
+            print("failed in taking a new screenshot")
+            print(error)
+        }
+        
+        // wait until task is finished and exit
+        task.waitUntilExit()
+        
+        // increase the default counter: + 1
+        DailyCounter.counter = DailyCounter.counter + 1
         
     }
     

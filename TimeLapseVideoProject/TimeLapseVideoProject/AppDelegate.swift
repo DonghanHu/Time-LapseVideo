@@ -19,6 +19,19 @@ struct Repository {
     static var downloadingVideosFolderPathURL       =   URL(string: "default_downloading_folder_path")
 }
 
+struct DailyCounter {
+    // null value
+    static var dateStr                              =   ""
+    // initialize counter as 0 as the first one
+    static var counter                              =   0
+}
+
+struct DailyNotification {
+    // null value
+    static var dateStr                              =   ""
+    static var wathchedTimeLapseVideo               =   false
+}
+
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -74,12 +87,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // takeTestingImage()
         // deleteTestingImage()
         
+        // set up initial values for date and use it to compare with other dates' string
+        let currentDateString = getCurrentDate()
+        DailyCounter.dateStr = currentDateString
+        DailyNotification.dateStr = currentDateString
+        
         // set up the menu on menu bar
         setupMenus()
         
         // set the recorind flag
         recordingFlag = false
-    
+
     }
     
     // function to creat the menu bar app's menu
@@ -105,6 +123,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func didTapOne() {
         
+        // compare default date string with current date and reset default values
+        let currentDateString = getCurrentDate()
+        // if two strings are not equal, reset default values
+        if DailyCounter.dateStr != currentDateString {
+            DailyCounter.dateStr = currentDateString
+            DailyCounter.counter = 0
+            DailyNotification.dateStr = currentDateString
+            DailyNotification.wathchedTimeLapseVideo = false
+        }
+        
+        // set button attributes
         let startButtonTitle = startButton.title
         if (startButtonTitle == "Start Recording"){
             startButton.title = "Stop Recording"
@@ -114,11 +143,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let takeScreenshotsObject = takeScreenshots()
             takeScreenshotsObject.creatFolderForTodayRecording()
             
-            takeScreenshotsObject.takeANewScreenshot()
+            takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
             
             // not taking a ascreenshot at the time when click this button
             self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
-                takeScreenshotsObject.takeANewScreenshot()
+                takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
             })
             
         }else {
@@ -153,6 +182,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setVideoDownloadingPathWindowController?.showWindow(self)
         setVideoDownloadingPathWindowController?.window?.level = .mainMenu + 1
 
+    }
+    
+    // function to get current date string as a reference
+    func getCurrentDate() -> String{
+
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYYMMdd"
+        let dateString = dateFormatter.string(from: date)
+        return dateString
+        
     }
     
     // function to return the computer's home path

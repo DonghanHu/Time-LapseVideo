@@ -25,11 +25,15 @@ struct RenderSettings {
 
     var outputURL: URL {
         // Use the CachesDirectory so the rendered video file sticks around as long as we need it to.
-        // Using the CachesDirectory ensures the file won't be included in a backup of the app.
+        // Using the Download folder Directory ensures the file won't be included in a backup of the app.
         let fileManager = FileManager.default
-        if let tmpDirURL = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
-            return tmpDirURL.appendingPathComponent(videoFilename).appendingPathExtension(videoFilenameExt)
+        
+        if let DownloadDirURL = try? fileManager.url(for: .downloadsDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+            return DownloadDirURL.appendingPathComponent(videoFilename).appendingPathExtension(videoFilenameExt)
         }
+//        if let tmpDirURL = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+//            return tmpDirURL.appendingPathComponent(videoFilename).appendingPathExtension(videoFilenameExt)
+//        }
         fatalError("URLForDirectory() failed")
     }
 }
@@ -42,12 +46,18 @@ class ImageAnimator {
     // Apple suggests a timescale of 600 because it's a multiple of standard video rates 24, 25, 30, 60 fps etc.
     static let kTimescale: Int32 = 600
 
+    // default settings: file name, outputURL, etc
     let settings: RenderSettings
+    
     let videoWriter: VideoWriter
+    // an array of images for rendering video
+    // code loadimages function to load these images
     var images: [NSImage]!
 
     var frameNum = 0
 
+    // save the video to the Photo Library as default
+    // from Download folder?
     class func saveToLibrary(videoURL: URL) {
         PHPhotoLibrary.requestAuthorization { status in
             guard status == .authorized else { return }
@@ -62,6 +72,7 @@ class ImageAnimator {
         }
     }
 
+    // delete the original generated video
     class func removeFileAtURL(fileURL: URL) {
         do {
             try FileManager.default.removeItem(atPath: fileURL.path)
@@ -71,9 +82,11 @@ class ImageAnimator {
         }
     }
 
+    // Initialization is the process of preparing an instance of a class, structure, or enumeration for use.
     init(renderSettings: RenderSettings) {
         settings = renderSettings
         videoWriter = VideoWriter(renderSettings: settings)
+        // code here later
         //images = loadImages()
     }
 
