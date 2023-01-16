@@ -34,7 +34,7 @@ struct DailyNotification {
 
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate{
 
 
     // private var window: NSWindow!
@@ -97,9 +97,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // set the recorind flag
         recordingFlag = false
-
+        
+        
+        sendNotification()
+        
+//        let calendar = Calendar.current
+//        // get current Date and set it as initial time
+//        let now = Date()
+//        let dateOfRun = calendar.date(
+//                bySettingHour: 00,
+//                minute: 20,
+//                second: 0,
+//                of: now)!
+//
+//        let timer = Timer(fireAt: dateOfRun, interval: 5, target: self, selector: #selector(sendNotification), userInfo: nil, repeats: true)
+//
+//        RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
+        
     }
     
+    
+    //
+    @objc func sendNotification() {
+        
+        let notificationHandler = notificationCenter()
+        notificationHandler.showNotification()
+        
+    }
     // function to creat the menu bar app's menu
     func setupMenus() {
 

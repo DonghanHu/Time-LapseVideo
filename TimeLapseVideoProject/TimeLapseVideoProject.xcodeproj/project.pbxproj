@@ -15,6 +15,7 @@
 		EA03833C29414FE600FAC0A0 /* imagesToVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */; };
 		EA03834529427D4400FAC0A0 /* videoWatchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03834329427D4400FAC0A0 /* videoWatchWindow.swift */; };
 		EA03834629427D4400FAC0A0 /* videoWatchWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */; };
+		EA078254297505D30091F87E /* notificationClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA078253297505D30091F87E /* notificationClass.swift */; };
 		EAD8B195296BD905002008C8 /* ffmpeg-5.1.2.7z in Resources */ = {isa = PBXBuildFile; fileRef = EAD8B194296BD905002008C8 /* ffmpeg-5.1.2.7z */; };
 		EAD8B197296BE3BF002008C8 /* ffmpegFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */; };
 		EAD8B199296BE899002008C8 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = EAD8B198296BE899002008C8 /* ffmpeg */; };
@@ -45,6 +46,7 @@
 		EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagesToVideo.swift; sourceTree = "<group>"; };
 		EA03834329427D4400FAC0A0 /* videoWatchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = videoWatchWindow.swift; sourceTree = "<group>"; };
 		EA03834429427D4400FAC0A0 /* videoWatchWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = videoWatchWindow.xib; sourceTree = "<group>"; };
+		EA078253297505D30091F87E /* notificationClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = notificationClass.swift; sourceTree = "<group>"; };
 		EAD8B194296BD905002008C8 /* ffmpeg-5.1.2.7z */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ffmpeg-5.1.2.7z"; sourceTree = "<group>"; };
 		EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ffmpegFunctions.swift; sourceTree = "<group>"; };
 		EAD8B198296BE899002008C8 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
@@ -110,14 +112,14 @@
 		EAF1010028D12BAE00065763 /* TimeLapseVideoProject */ = {
 			isa = PBXGroup;
 			children = (
-				EA00F622294D254300D54360 /* alertDialog.swift */,
 				EAF1010128D12BAE00065763 /* AppDelegate.swift */,
 				EAF1010328D12BAE00065763 /* ViewController.swift */,
-				EAF1010828D12BB600065763 /* Assets.xcassets */,
 				EAF1010A28D12BB600065763 /* Main.storyboard */,
-				EAF1010D28D12BB600065763 /* Info.plist */,
 				EAF1010E28D12BB600065763 /* TimeLapseVideoProject.entitlements */,
+				EAF1010D28D12BB600065763 /* Info.plist */,
 				EAF1010528D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld */,
+				EAF1010828D12BB600065763 /* Assets.xcassets */,
+				EA00F622294D254300D54360 /* alertDialog.swift */,
 				EA0383372941427000FAC0A0 /* ScreenshotInfo.swift */,
 				EA0383392941439300FAC0A0 /* takeScreenshot.swift */,
 				EA03833B29414FE600FAC0A0 /* imagesToVideo.swift */,
@@ -126,6 +128,7 @@
 				EA00F61E294D227800D54360 /* setVideoPath.swift */,
 				EA00F61F294D227800D54360 /* setVideoPath.xib */,
 				EAD8B196296BE3BF002008C8 /* ffmpegFunctions.swift */,
+				EA078253297505D30091F87E /* notificationClass.swift */,
 			);
 			path = TimeLapseVideoProject;
 			sourceTree = "<group>";
@@ -184,7 +187,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1170;
-				LastUpgradeCheck = 1170;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Donghan Hu";
 				TargetAttributes = {
 					EAF100FD28D12BAE00065763 = {
@@ -245,6 +248,7 @@
 			files = (
 				EA00F623294D254300D54360 /* alertDialog.swift in Sources */,
 				EAF1010428D12BAE00065763 /* ViewController.swift in Sources */,
+				EA078254297505D30091F87E /* notificationClass.swift in Sources */,
 				EA0383382941427000FAC0A0 /* ScreenshotInfo.swift in Sources */,
 				EAF1010728D12BAE00065763 /* TimeLapseVideoProject.xcdatamodeld in Sources */,
 				EA03833A2941439300FAC0A0 /* takeScreenshot.swift in Sources */,
@@ -312,6 +316,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -319,6 +324,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -372,6 +378,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -379,6 +386,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -404,8 +412,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TimeLapseVideoProject/TimeLapseVideoProject.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = TimeLapseVideoProject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -422,8 +432,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TimeLapseVideoProject/TimeLapseVideoProject.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = TimeLapseVideoProject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -442,6 +454,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = TimeLapseVideoProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -463,6 +476,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = TimeLapseVideoProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
