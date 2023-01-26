@@ -16,6 +16,31 @@ import Foundation
 // functions using ffmpeg
 class ffmpegClass {
     
+    // ffmpeg -r 24 -f image2 -pattern_type glob -i "*?jpg" -vcodec libx264 -crf 20 -pix_fmt yuv420p output.mp4
+    
+    func basicFunction(inputFilePath: String, outputFilePath: String) {
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        
+        let process = Process()
+        
+        process.launchPath = launchPath
+        process.arguments = [
+            "-i", inputFilePath, "*?jpg",
+            "-r", "10", "-f", "image2", "-pattern_type", "glob",
+            "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+            "timekapseVideo.mp4", outputFilePath
+        ]
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        print("this is description: " + process.description)
+        process.waitUntilExit()
+        
+        print("video done")
+    }
+    
     // return a process and dispatchWorkItem, code this later
     // 
     func generateTimeLapseVideo(inputFilePath: String, outputFilePath: String,

@@ -7,6 +7,8 @@
 //
 
 import Cocoa
+import AppKit
+import UserNotifications
 
 
 struct Repository {
@@ -17,6 +19,7 @@ struct Repository {
     // folder to save generated time-lapse videos
     static var downloadingVideosFolderPathString    =   "default video downloading folder path"
     static var downloadingVideosFolderPathURL       =   URL(string: "default_downloading_folder_path")
+    
 }
 
 struct DailyCounter {
@@ -53,6 +56,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     
     private var setVideoDownloadingPathWindowController: setVideoPath?
+    
+    // notification center
+    let un = UNUserNotificationCenter.current()
     
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -99,23 +105,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         recordingFlag = false
         
         
-        sendNotification()
+        // request for sending local notification
+        requestNotification()
         
-//        let calendar = Calendar.current
-//        // get current Date and set it as initial time
-//        let now = Date()
-//        let dateOfRun = calendar.date(
-//                bySettingHour: 00,
-//                minute: 20,
-//                second: 0,
-//                of: now)!
-//
-//        let timer = Timer(fireAt: dateOfRun, interval: 5, target: self, selector: #selector(sendNotification), userInfo: nil, repeats: true)
-//
-//        RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
+        // set default folder to save created time-lapse videos
+        let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
+        Repository.downloadingVideosFolderPathString = defaultDownloadingVideosFolderPath
+        Repository.downloadingVideosFolderPathURL = URL(string: defaultDownloadingVideosFolderPath)
+        
+        if(FileManager.default.fileExists(atPath: defaultDownloadingVideosFolderPath)){
+            print("default folder for saving videos is already existed!")
+        }
+        else{
+            print("default folder for saving videos does not exist")
+            // do...
+        }
+        
+        
+        
         
     }
     
+    func requestNotification(){
+        un.requestAuthorization(options: [.sound, .alert]) {(authorized, error) in
+            if authorized {
+                print("notification is authorized")
+            } else if !authorized{
+                print("notification is not authorized")
+            } else {
+                print(error?.localizedDescription as Any)
+            }
+        }
+        
+    }
     
     //
     @objc func sendNotification() {
@@ -132,11 +154,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         startButton = NSMenuItem(title: "Start Recording", action: #selector(didTapOne) , keyEquivalent: "1")
         menu.addItem(startButton)
 
-        watchButton = NSMenuItem(title: "Generate Time-Lapse Video", action: #selector(didTapTwo) , keyEquivalent: "2")
+        watchButton = NSMenuItem(title: "Generate Today Video", action: #selector(didTapTwo) , keyEquivalent: "2")
         menu.addItem(watchButton)
         
         saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
         menu.addItem(saveFolderButton)
+        
+        let testButton = NSMenuItem(title: "test button", action: #selector(didTapfour) , keyEquivalent: "4")
+        menu.addItem(testButton)
         
         menu.addItem(NSMenuItem.separator())
 
@@ -145,6 +170,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         statusItem.menu = menu
     }
     
+    // test button for generating time lapse video
+    @objc func didTapfour(){
+        let inputStringPath = "/Users/donghanhu/Desktop/ScreenshotsForVideos/"
+        let outputStringPath = "/Users/donghanhu/Downloads/"
+        let ffmpegHandler = ffmpegClass()
+        print("input file path is: " + inputStringPath)
+        print("output file path is: " + outputStringPath)
+        ffmpegHandler.basicFunction(inputFilePath: inputStringPath, outputFilePath: outputStringPath)
+    }
+    
+    // first button action
     @objc func didTapOne() {
         
         // compare default date string with current date and reset default values
@@ -188,12 +224,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
 
     @objc func didTapTwo() {
-        print("tapped watch button.")
+        print("tapped generate video button.")
         
-        var mainWindowController: videoWatchWindow?
-        mainWindowController = videoWatchWindow()
-        mainWindowController?.showWindow(nil)
-        mainWindowController?.window?.level = .mainMenu + 1
+        // create a window for generating time-lapse video
+//        var mainWindowController: videoWatchWindow?
+//        mainWindowController = videoWatchWindow()
+//        mainWindowController?.showWindow(nil)
+//        mainWindowController?.window?.level = .mainMenu + 1
+        
+        // use current saving path to save created video
+        // e.g., user/Downloads/
+        print("current target folder is: " + Repository.downloadingVideosFolderPathString)
+        
+        // get today's screenshots' folder
+        let takeScreenshotsHandler = takeScreenshots()
+        let tempfolderPath = takeScreenshotsHandler.returnCurrentFolder()
+        if(FileManager.default.fileExists(atPath: tempfolderPath)){
+            print("today's screenshot folder is already existed!")
+            print("today folder is: " + tempfolderPath)
+            // create time-lapse videos
+            
+            
+        }
+        else{
+            print("Today, you haven't taken any screenshots yet!")
+            // do...
+        }
+        
+        
+        
         
     }
     
@@ -276,6 +335,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
         
     }
+    
 
 
     // function to quit the menu bar application

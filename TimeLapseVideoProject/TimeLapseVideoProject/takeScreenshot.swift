@@ -55,6 +55,14 @@ class takeScreenshots{
         }
     }
     
+    // return today's folder path
+    func returnCurrentFolder() -> String{
+        let currentDate = getCurrentMonth() + "-" + getCurrentDay() + "-" + getCurrentYear()
+        let newRecordingFolderPath = Repository.defaultFolderPathString + currentDate
+        return newRecordingFolderPath
+        
+    }
+    
     // function to take a screenshot with customsized arguments with formatted date name
     func takeANewScreenshotWithFormattedDateName(){
         
