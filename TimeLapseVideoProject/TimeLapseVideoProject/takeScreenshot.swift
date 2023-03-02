@@ -42,6 +42,8 @@ class takeScreenshots{
         
         tempFolderPathString = newRecordingFolderPath
         
+        Repository.dailyScreenshotFolderString = newRecordingFolderPath
+        
         if(FileManager.default.fileExists(atPath: newRecordingFolderPath)){
             print("default folder for today's screenshots is already existed!")
         }

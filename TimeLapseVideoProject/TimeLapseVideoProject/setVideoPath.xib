@@ -11,6 +11,7 @@
                 <outlet property="folderPathLabel" destination="4lS-Gn-QHS" id="7SJ-bl-XGx"/>
                 <outlet property="okDoNothingButton" destination="M7M-B9-eyE" id="iMQ-CC-pQM"/>
                 <outlet property="setFolderPathButton" destination="eof-eI-ieH" id="tPY-RP-u1F"/>
+                <outlet property="staticLabel" destination="QF9-fi-EbW" id="AJN-Ya-2ZG"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -56,6 +57,15 @@
                             <action selector="okDoNothingAction:" target="-2" id="UER-Kg-bSE"/>
                         </connections>
                     </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QF9-fi-EbW">
+                        <rect key="frame" x="77" y="201" width="325" height="16"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="8L2-cI-lTt">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
             <connections>

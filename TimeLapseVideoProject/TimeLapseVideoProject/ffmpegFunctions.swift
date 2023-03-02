@@ -16,6 +16,8 @@ import Foundation
 // functions using ffmpeg
 class ffmpegClass {
     
+    
+    
     // ffmpeg -r 24 -f image2 -pattern_type glob -i "*?jpg" -vcodec libx264 -crf 20 -pix_fmt yuv420p output.mp4
     
     func basicFunction(inputFilePath: String, outputFilePath: String) {
@@ -24,31 +26,80 @@ class ffmpegClass {
             return
         }
         
+        
         let process = Process()
         
+        // print("currentDirectoryURL: " + inputFilePath)
+        print("current: " + process.currentDirectoryPath)
+        print(URL(string: inputFilePath))
+        print(URL(string: inputFilePath)?.absoluteString)
+        // process.currentDirectoryURL = URL(string: inputFilePath)
+        print("current: " + process.currentDirectoryPath)
         process.launchPath = launchPath
+        //process.launchPath = "/usr/local/bin/ffmpeg"
+        
+        // /usr/local/bin/ffmpeg -r 24 -f image2 -pattern_type glob -i "Desktop/ScreenshotsForVideos/*?jpg" -vcodec libx264 -crf 20 -pix_fmt yuv420p Downloads/output1.mp4
+        // let imageInputPath = Repository.dailyScreenshotFolderString + "\"*?jpg\""
+        // let imageOutputPath = Repository.downloadingVideosFolderPathString + "tempName.mp4"
+        let imageInputPath = "\"./ScreenshotsForVideos/*?jpg\""
+        let imageOutputPath = "./Downloads/output.mp4"
+        // /Users/donghanhu/Downloads/output.mp4
+        
+//        print("input file path: " + imageInputPath)
+//        print("output file path: " + imageOutputPath)
+        
+        // process.launchPath = "/bin/pwd"
+        
+        // process.arguments = ["-version"]
+//        process.arguments = [
+//            "-i", inputFilePath,
+//            "-r", "10", "-f", "image2", "-pattern_type", "glob",
+//            "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+//            "timekapseVideo.mp4", outputFilePath
+//        ]
+        
+        // /Users/donghanhu/Desktop/ScreenshotsForVideos/Frame00000151.jpg
+        
+        let imagesFolderPath = inputFilePath + "/*?jpg"
+        
+//        process.arguments = [
+//            "-r", "24", "-f", "image2", "-pattern_type", "glob", "-i", "/Users/donghanhu/Desktop/ScreenshotsForVideos/*?jpg",
+//            "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+//            "/Users/donghanhu/Downloads/output2.mp4"
+//
+//        ]
+        
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
+        let dateString = dateFormatter.string(from: date)
+        
+        let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         process.arguments = [
-            "-i", inputFilePath, "*?jpg",
-            "-r", "10", "-f", "image2", "-pattern_type", "glob",
+            "-r", "24", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
-            "timekapseVideo.mp4", outputFilePath
+            outputFileName
+
         ]
+        //print("\"*?jpg\"")
+
+        print(process.arguments)
         process.standardInput = FileHandle.nullDevice
         process.launch()
-        print("this is description: " + process.description)
+        
         process.waitUntilExit()
         
         print("video done")
     }
     
     // return a process and dispatchWorkItem, code this later
-    // 
-    func generateTimeLapseVideo(inputFilePath: String, outputFilePath: String,
-                     callback: @escaping (Bool) -> Void) -> (Process, DispatchWorkItem)? {
+    // callback: @escaping (Bool) -> Void) -> (Process, DispatchWorkItem)?
+    func generateTimeLapseVideo(inputFilePath: String, outputFilePath: String)
+                      {
         
         // set ffmpeg terminal code: launch path
         guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else {
-            return nil
+            return
         }
         
         let process = Process()
@@ -58,19 +109,19 @@ class ffmpegClass {
             process.arguments = [
                 "-i", inputFilePath,
                 "-r", "10", "-f", "image2", "-pattern_type", "glob",
-                "-vcodec", "libx264", "-crf", "20", "-pix-fmt", "yuv420p",
+                "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
                 "timekapseVideo.mp4", outputFilePath
             ]
             // print(process.arguments)
             process.standardInput = FileHandle.nullDevice
             process.launch()
-            process.terminationHandler = { process in
-                callback(process.terminationStatus == 0)
-            }
+//            process.terminationHandler = { process in
+//                callback(process.terminationStatus == 0)
+//            }
         }
         DispatchQueue.global(qos: .userInitiated).async(execute: task)
         
-        return (process, task)
+        // return (process, task)
     }
     
     typealias ProcessMeta = (Process, DispatchWorkItem)

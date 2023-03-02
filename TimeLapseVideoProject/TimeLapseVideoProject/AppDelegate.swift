@@ -20,6 +20,9 @@ struct Repository {
     static var downloadingVideosFolderPathString    =   "default video downloading folder path"
     static var downloadingVideosFolderPathURL       =   URL(string: "default_downloading_folder_path")
     
+    static var dailyScreenshotFolderString          =   ""
+    static var dailyScreenshotFolderURL             =   URL(string: "daily_folder_path")
+    
 }
 
 struct DailyCounter {
@@ -90,8 +93,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         checkDefaultFolder(folderPath: defaultFolderPathString)
         
         // take a testing screenshot while launching the application for asking request
-        // takeTestingImage()
-        // deleteTestingImage()
+         takeTestingImage()
+         deleteTestingImage()
         
         // set up initial values for date and use it to compare with other dates' string
         let currentDateString = getCurrentDate()
@@ -106,9 +109,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         
         // request for sending local notification
-        requestNotification()
+        // requestNotification()
+        // request for permission to send notification
+        un.requestAuthorization(options: [.alert, .sound]) { (authorized, error) in
+            if authorized {
+                print("Authorized")
+            } else if !authorized {
+                print("Not authorized")
+            } else {
+                print(error?.localizedDescription as Any)
+            }
+        }
         
-        // set default folder to save created time-lapse videos
+        
+        // set default folder to save created time-lapse videos： Downloads folder
         let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
         Repository.downloadingVideosFolderPathString = defaultDownloadingVideosFolderPath
         Repository.downloadingVideosFolderPathURL = URL(string: defaultDownloadingVideosFolderPath)
@@ -120,10 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             print("default folder for saving videos does not exist")
             // do...
         }
-        
-        
-        
-        
+
     }
     
     func requestNotification(){
@@ -139,13 +150,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
     }
     
-    //
-    @objc func sendNotification() {
-        
-        let notificationHandler = notificationCenter()
-        notificationHandler.showNotification()
-        
-    }
     // function to creat the menu bar app's menu
     func setupMenus() {
 
@@ -163,6 +167,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         let testButton = NSMenuItem(title: "test button", action: #selector(didTapfour) , keyEquivalent: "4")
         menu.addItem(testButton)
         
+        
+        // button for testing notifiaction setting
+        let notificationButton = NSMenuItem(title: "notification", action: #selector(didTapFive), keyEquivalent: "5")
+        menu.addItem(notificationButton)
+        
+        
+        
         menu.addItem(NSMenuItem.separator())
 
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -170,13 +181,145 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         statusItem.menu = menu
     }
     
+    @objc func didTapFive() async{
+        
+        // cancel all other notifications
+        self.un.removeAllPendingNotificationRequests()
+        
+        let nots = await self.un.pendingNotificationRequests()
+        print(nots)
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        // another option
+//        self.un.getPendingNotificationRequests { (notificationRequests) in
+//           var identifiers: [String] = []
+//           for notification:UNNotificationRequest in notificationRequests {
+//               if notification.identifier == "identifierCancel" {
+//                  identifiers.append(notification.identifier)
+//               }
+//           }
+//            self.un.removePendingNotificationRequests(withIdentifiers: identifiers)
+//        }
+        
+        print("set notifications for five weekdays")
+        un.getNotificationSettings { (settings) in
+            if settings.authorizationStatus == .authorized {
+                
+//                let filePath = Bundle.main.path(forResource: "notificationIcon", ofType: ".png")
+//                let fileUrl = URL(fileURLWithPath: filePath!)
+//                do {
+//                    let attachment = try UNNotificationAttachment.init(identifier: "AnotherTest", url: fileUrl, options: .none)
+//                    content.attachments = [attachment]
+//
+//                } catch let error {
+//                    print(error.localizedDescription as Any)
+//                }
+                
+                
+                // weekdays: 1 is Sunday
+                let weekdays = [2, 3, 4, 5, 6]
+                // uuid as identifier
+                let stringTest = UUID().uuidString;
+                
+                for day in weekdays {
+                    var components = DateComponents()
+                    components.hour = 17
+                    components.minute = 0
+                    components.second = 0
+                    components.weekday = day
+                    components.weekdayOrdinal
+                    components.timeZone = .current
+                    let calendar = Calendar(identifier: .gregorian)
+                    let calenderDate = calendar.date(from: components)!
+                    
+                    
+                    let triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second,], from: calenderDate)
+
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: triggerWeekly, repeats: true)
+
+                    let content = UNMutableNotificationContent()
+                    content.title = "this is title"
+                    content.body = "this is body"
+                    content.sound = UNNotificationSound.default
+                    content.categoryIdentifier = "timelapsevideo"
+
+                    let request = UNNotificationRequest(identifier: "textNotification", content: content, trigger: trigger)
+                    
+                    self.un.add(request) { (error) in
+                        if error != nil {
+                            print(error?.localizedDescription as Any)
+                        }
+                    }
+
+                }
+                
+                
+                
+                // set notificaiton actions
+                
+//                let action1 = UNNotificationAction(identifier: "action1", title: "Ac1", options: [])
+//                let action2 = UNNotificationAction(identifier: "action2", title: "Ac2", options: [])
+//                let action3 = UNNotificationAction(identifier: "action3", title: "Ac3", options: [])
+//                let category = UNNotificationCategory(identifier: "actions", actions: [action1, action2, action3], intentIdentifiers: [], options: [])
+                
+                // time interval should be at least 60 if repeated
+                // set 30 minutes
+                // let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
+                
+//                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
+//                let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+                
+                // self.un.setNotificationCategories([category])
+                
+                
+                
+            }
+            
+        }
+    }
+    
+    // set separate notification
+    func setSeparateNotifcationMethod(){
+        
+        let days = [2, 3, 4, 5, 6]
+        for day in days{
+            let content = UNMutableNotificationContent()
+            content.title = "this is title and day is " + day.description
+            content.subtitle = "this is subtitle"
+            content.body = "This is body!"
+            content.sound = UNNotificationSound.default
+            // set date
+            var dateComponents = DateComponents()
+            dateComponents.timeZone = TimeZone.current
+            // set at 7:00 pm for now
+            dateComponents.hour = 19
+            dateComponents.minute = 00
+            dateComponents.second = 00
+            dateComponents.weekday = day
+            
+            let notificationTrigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            let identifier = UUID().uuidString
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: notificationTrigger)
+            self.un.add(request) { (error) in
+                if error != nil {
+                    print(error?.localizedDescription as Any)
+                }
+            }
+        }
+        
+        
+    }
+    
     // test button for generating time lapse video
     @objc func didTapfour(){
-        let inputStringPath = "/Users/donghanhu/Desktop/ScreenshotsForVideos/"
-        let outputStringPath = "/Users/donghanhu/Downloads/"
+        // let inputStringPath = "Users/donghanhu/Desktop/ScreenshotsForVideos/*?jpg"
+        // let outputStringPath = "Users/donghanhu/Downloads/output.mp4"
+        let inputStringPath = "\"file://Users/donghanhu/Desktop/ScreenshotsForVideos/Frame00000151jpg\""
+        let outputStringPath = "\"/Users/donghanhu/Downloads/output.mp4\""
         let ffmpegHandler = ffmpegClass()
         print("input file path is: " + inputStringPath)
         print("output file path is: " + outputStringPath)
+        // ffmpegHandler.generateTimeLapseVideo(inputFilePath: inputStringPath, outputFilePath: outputStringPath)
         ffmpegHandler.basicFunction(inputFilePath: inputStringPath, outputFilePath: outputStringPath)
     }
     
@@ -234,21 +377,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         // use current saving path to save created video
         // e.g., user/Downloads/
-        print("current target folder is: " + Repository.downloadingVideosFolderPathString)
+        print("current folder for saving time-lapse videos is: " + Repository.downloadingVideosFolderPathString)
         
         // get today's screenshots' folder
         let takeScreenshotsHandler = takeScreenshots()
         let tempfolderPath = takeScreenshotsHandler.returnCurrentFolder()
+        print("screenshots folder is: " + tempfolderPath)
+        
         if(FileManager.default.fileExists(atPath: tempfolderPath)){
             print("today's screenshot folder is already existed!")
             print("today folder is: " + tempfolderPath)
             // create time-lapse videos
-            
+            let ffmpegHandler = ffmpegClass()
+            let outputPath = Repository.downloadingVideosFolderPathString
+            ffmpegHandler.basicFunction(inputFilePath: tempfolderPath, outputFilePath: outputPath)
             
         }
         else{
             print("Today, you haven't taken any screenshots yet!")
             // do...
+            let alert = NSAlert()
+            alert.messageText = "Today, you haven't taken any screenshots yet!"
+            alert.informativeText = "Please remember to record your today activities. "
+            alert.alertStyle = NSAlert.Style.warning
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
         }
         
         
@@ -442,3 +595,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
 }
 
+@available(macOS 11.0, *)
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        return completionHandler([.list, .sound])
+    }
+}

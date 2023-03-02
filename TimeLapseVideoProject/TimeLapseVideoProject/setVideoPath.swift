@@ -21,6 +21,8 @@ class setVideoPath: NSWindowController {
     
     @IBOutlet weak var folderPathLabel: NSTextField!
     
+    @IBOutlet weak var staticLabel: NSTextField!
+    
     @IBOutlet weak var okDoNothingButton: NSButton!
     
     override func windowDidLoad() {
@@ -40,6 +42,8 @@ class setVideoPath: NSWindowController {
         button.target = self
         button.action = #selector(buttonTest)
         self.window?.contentView?.addSubview(button)
+        
+        staticLabel.stringValue = "Time lapse video is saving to: " + Repository.downloadingVideosFolderPathString
         
         
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
