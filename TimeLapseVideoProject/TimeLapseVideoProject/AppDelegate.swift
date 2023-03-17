@@ -88,7 +88,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         Repository.defaultFolderPathString = defaultFolderPathString
         Repository.defaultFolderPathURL = URL(string: defaultFolderPathString)
         
-        
         // create a default folder for saving screenshots
         checkDefaultFolder(folderPath: defaultFolderPathString)
         
@@ -107,6 +106,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // set the recorind flag
         recordingFlag = false
         
+        // get all folders from the target root path
+        folderList()
         
         // request for sending local notification
         // requestNotification()
@@ -121,6 +122,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             }
         }
         
+        // set notification()
+        setWeekdayNotification()
         
         // set default folder to save created time-lapse videos： Downloads folder
         let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
@@ -137,7 +140,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
     }
     
-    func requestNotification(){
+    @objc func getPendingNotifications() async {
+        var pendings = await un.pendingNotificationRequests()
+        print("pendings: \(pendings.count)")
+        print(pendings)
+    }
+    
+    //
+    @objc func requestNotification(){
         un.requestAuthorization(options: [.sound, .alert]) {(authorized, error) in
             if authorized {
                 print("notification is authorized")
@@ -161,19 +171,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         watchButton = NSMenuItem(title: "Generate Today Video", action: #selector(didTapTwo) , keyEquivalent: "2")
         menu.addItem(watchButton)
         
-        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
-        menu.addItem(saveFolderButton)
+        // remove
+//        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
+//        menu.addItem(saveFolderButton)
         
-        let testButton = NSMenuItem(title: "test button", action: #selector(didTapfour) , keyEquivalent: "4")
-        menu.addItem(testButton)
-        
+        // remove
+//        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
+//        menu.addItem(testButton)
         
         // button for testing notifiaction setting
-        let notificationButton = NSMenuItem(title: "notification", action: #selector(didTapFive), keyEquivalent: "5")
-        menu.addItem(notificationButton)
-        
-        
-        
+//        let notificationButton = NSMenuItem(title: "notification", action: #selector(didTapFive), keyEquivalent: "5")
+        // menu.addItem(notificationButton)
+        // add a line separator
         menu.addItem(NSMenuItem.separator())
 
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -181,25 +190,71 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         statusItem.menu = menu
     }
     
-    @objc func didTapFive() async{
+    // function to set notification on weekdays
+    func setWeekdayNotification() {
         
         // cancel all other notifications
         self.un.removeAllPendingNotificationRequests()
         
-        let nots = await self.un.pendingNotificationRequests()
-        print(nots)
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-        // another option
-//        self.un.getPendingNotificationRequests { (notificationRequests) in
-//           var identifiers: [String] = []
-//           for notification:UNNotificationRequest in notificationRequests {
-//               if notification.identifier == "identifierCancel" {
-//                  identifiers.append(notification.identifier)
-//               }
-//           }
-//            self.un.removePendingNotificationRequests(withIdentifiers: identifiers)
-//        }
+        
+        print("set notifications for five weekdays")
+        un.getNotificationSettings { (settings) in
+            if settings.authorizationStatus == .authorized {
+                
+                // weekdays: 1 is Sunday
+                let weekdays = [2, 3, 4, 5, 6]
+                
+                for day in weekdays {
+                    let weekday = Int(day)
+                    var components = DateComponents()
+                    components.hour = 17
+                    components.minute = 0
+                    components.second = 0
+                    // not sure how this works, but this is essential to reset weekday in triggerweekly
+                    components.weekdayOrdinal = 10
+                    components.weekday = weekday
+                    components.timeZone = .current
+                    let calendar = Calendar(identifier: .gregorian)
+                    let calenderDate = calendar.date(from: components)!
+                    
+                    var triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second,], from: calenderDate)
+                    triggerWeekly.isLeapMonth = false
+//                    print(type(of: weekday))
+//                    print(triggerWeekly)
+                    
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: triggerWeekly, repeats: true)
+
+                    let content = UNMutableNotificationContent()
+                    content.title = "Time-lapse video reminder."
+                    content.body = "Please remember to review your today's time-lapse video. Thank you!"
+                    content.sound = UNNotificationSound.default
+                    content.categoryIdentifier = "timelapsevideo"
+
+                    let request = UNNotificationRequest(identifier: "textNotification", content: content, trigger: trigger)
+                    self.un.delegate = self
+                    self.un.add(request) { (error) in
+                        if error != nil {
+                            print(error?.localizedDescription as Any)
+                        }
+                    }
+
+                }
+                // time interval should be at least 60 if repeated
+                // let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
+            }
+            
+        }
+    }
+    
+    @objc func didTapFive() {
+        
+        // cancel all other notifications
+        self.un.removeAllPendingNotificationRequests()
+        
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         
         print("set notifications for five weekdays")
         un.getNotificationSettings { (settings) in
@@ -215,31 +270,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 //                    print(error.localizedDescription as Any)
 //                }
                 
-                
                 // weekdays: 1 is Sunday
                 let weekdays = [2, 3, 4, 5, 6]
                 // uuid as identifier
-                let stringTest = UUID().uuidString;
+                let testUUIDString = UUID().uuidString;
                 
                 for day in weekdays {
+                    let weekday = Int(day)
                     var components = DateComponents()
                     components.hour = 17
                     components.minute = 0
                     components.second = 0
-                    components.weekday = day
-                    components.weekdayOrdinal
+                    // not sure how this works, but this is essential to reset weekday in triggerweekly
+                    components.weekdayOrdinal = 10
+                    components.weekday = weekday
                     components.timeZone = .current
                     let calendar = Calendar(identifier: .gregorian)
                     let calenderDate = calendar.date(from: components)!
                     
+                    var triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second,], from: calenderDate)
+                    // what is leapmonth
+                    triggerWeekly.isLeapMonth = false
+                    print(type(of: weekday))
+                    print(triggerWeekly)
                     
-                    let triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second,], from: calenderDate)
-
                     let trigger = UNCalendarNotificationTrigger(dateMatching: triggerWeekly, repeats: true)
 
                     let content = UNMutableNotificationContent()
-                    content.title = "this is title"
-                    content.body = "this is body"
+                    content.title = "Time-lapse vidoe reminder."
+                    content.body = "Please remember to review your today's time-lapse video. Thank you!"
                     content.sound = UNNotificationSound.default
                     content.categoryIdentifier = "timelapsevideo"
 
@@ -252,63 +311,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                     }
 
                 }
-                
-                
-                
-                // set notificaiton actions
-                
-//                let action1 = UNNotificationAction(identifier: "action1", title: "Ac1", options: [])
-//                let action2 = UNNotificationAction(identifier: "action2", title: "Ac2", options: [])
-//                let action3 = UNNotificationAction(identifier: "action3", title: "Ac3", options: [])
-//                let category = UNNotificationCategory(identifier: "actions", actions: [action1, action2, action3], intentIdentifiers: [], options: [])
-                
                 // time interval should be at least 60 if repeated
-                // set 30 minutes
                 // let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
-                
-//                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
-//                let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-                
-                // self.un.setNotificationCategories([category])
-                
-                
-                
             }
             
         }
     }
     
-    // set separate notification
-    func setSeparateNotifcationMethod(){
-        
-        let days = [2, 3, 4, 5, 6]
-        for day in days{
-            let content = UNMutableNotificationContent()
-            content.title = "this is title and day is " + day.description
-            content.subtitle = "this is subtitle"
-            content.body = "This is body!"
-            content.sound = UNNotificationSound.default
-            // set date
-            var dateComponents = DateComponents()
-            dateComponents.timeZone = TimeZone.current
-            // set at 7:00 pm for now
-            dateComponents.hour = 19
-            dateComponents.minute = 00
-            dateComponents.second = 00
-            dateComponents.weekday = day
-            
-            let notificationTrigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            let identifier = UUID().uuidString
-            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: notificationTrigger)
-            self.un.add(request) { (error) in
-                if error != nil {
-                    print(error?.localizedDescription as Any)
-                }
-            }
-        }
-        
-        
-    }
     
     // test button for generating time lapse video
     @objc func didTapfour(){
@@ -366,15 +375,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
     }
 
+    // function to create time-lapse video
     @objc func didTapTwo() {
         print("tapped generate video button.")
-        
-        // create a window for generating time-lapse video
-//        var mainWindowController: videoWatchWindow?
-//        mainWindowController = videoWatchWindow()
-//        mainWindowController?.showWindow(nil)
-//        mainWindowController?.window?.level = .mainMenu + 1
-        
+
         // use current saving path to save created video
         // e.g., user/Downloads/
         print("current folder for saving time-lapse videos is: " + Repository.downloadingVideosFolderPathString)
@@ -403,17 +407,75 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             alert.addButton(withTitle: "OK")
             alert.runModal()
         }
-        
-        
-        
-        
+ 
     }
     
+    // get a list of all folders
+    func folderList(){
+    
+        let rootPath = getHomePath() + "/Documents/" + "TimeLapseVideo/Screenshots/"
+//        let folderList = NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: rootPath)
+//        print("folderList: ")
+//        print(folderList)
+        
+        let rootPathURL = URL(string: rootPath)
+        do {
+            let items = try FileManager.default.contentsOfDirectory(atPath: rootPath)
+
+            for item in items {
+                // corner case
+                if(item == ".DS_Store"){
+                    continue
+                }
+                // let time = item[FileAttributeKey.creationDate]
+                let folderPath = rootPath + item + "/"
+                print(folderPath)
+                do {
+                    let folder = try FileManager.default.attributesOfItem(atPath: folderPath) as [FileAttributeKey:Any]
+                    let creationDate = folder[FileAttributeKey.creationDate] as! Date
+                    print("Found \(creationDate)")
+                    
+                    let currentDate = Date()
+                    // print(currentDate)
+                    
+                    // one week for saving
+                    let pastTime = creationDate.addingTimeInterval(604800)
+                    //if true, should be deleted
+                    print(currentDate > pastTime)
+                    // delete
+                    if(currentDate > pastTime){
+                        do {
+                            let fileManager = FileManager.default
+                            // Check if file exists
+                            if fileManager.fileExists(atPath: folderPath) {
+                                print("folder existed")
+                                // Delete file, comment this line for now
+                                // try fileManager.removeItem(atPath: folderPath)
+                            } else {
+                                print("File does not exist")
+                            }
+                        } catch {
+                            print("An error took place: \(error)")
+                        }
+                    } else{
+                        // do nothing
+                    }
+                    
+                    
+                } catch let theError as Error {
+                    print("file not found \(theError)")
+                }
+                
+            }
+        } catch {
+            // failed to read directory – bad permissions, perhaps?
+        }
+    }
+    
+    // action for the third button
+    // currently, set the default folder as "Download"
     @objc func didTapThree() {
         print("tapped save folder path.")
-        
-//
-        
         setVideoDownloadingPathWindowController = setVideoPath()
         setVideoDownloadingPathWindowController?.showWindow(self)
         setVideoDownloadingPathWindowController?.window?.level = .mainMenu + 1
@@ -488,8 +550,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
         
     }
-    
-
 
     // function to quit the menu bar application
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -595,10 +655,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
 }
 
-@available(macOS 11.0, *)
 extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        return completionHandler([.list, .sound])
+        if #available(macOS 11.0, *) {
+            return completionHandler([.list, .sound])
+        } else {
+            // Fallback on earlier versions
+        }
+        // return completionHandler([.list, .sound])
     }
 }
