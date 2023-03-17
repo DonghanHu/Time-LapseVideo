@@ -121,9 +121,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 print(error?.localizedDescription as Any)
             }
         }
+        sleep(1)
+        // set notification for only one time
         
-        // set notification()
-        setWeekdayNotification()
+        let hasLaunchedKey = "HasLaunched"
+        let defaults = UserDefaults.standard
+        let hasLaunched = defaults.bool(forKey: hasLaunchedKey)
+        print("haslaunched 1 " + String(hasLaunched))
+        var authorizedFlag = false
+        un.getNotificationSettings { (settings) in
+            // print(type(of: settings.authorizationStatus))
+            if settings.authorizationStatus == .authorized {
+                print("status is authorized")
+                authorizedFlag = true
+            }
+        }
+        sleep(1)
+        print(authorizedFlag)
+        if !hasLaunched && authorizedFlag{
+            print("both true")
+            defaults.set(true, forKey: hasLaunchedKey)
+            // set notification()
+            setWeekdayNotification()
+        } else{
+            // reset default values
+            let appDomain = Bundle.main.bundleIdentifier!
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+        }
+        sleep(1)
         
         // set default folder to save created time-lapse videos： Downloads folder
         let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
@@ -441,7 +466,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                     // one week for saving
                     let pastTime = creationDate.addingTimeInterval(604800)
                     //if true, should be deleted
-                    print(currentDate > pastTime)
+                    // print(currentDate > pastTime)
                     // delete
                     if(currentDate > pastTime){
                         do {
@@ -450,7 +475,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                             if fileManager.fileExists(atPath: folderPath) {
                                 print("folder existed")
                                 // Delete file, comment this line for now
-                                // try fileManager.removeItem(atPath: folderPath)
+                                try fileManager.removeItem(atPath: folderPath)
                             } else {
                                 print("File does not exist")
                             }
