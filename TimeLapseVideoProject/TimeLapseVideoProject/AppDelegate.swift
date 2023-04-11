@@ -199,6 +199,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // remove
 //        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
 //        menu.addItem(saveFolderButton)
+        let yesterdayVideoButton = NSMenuItem(title: "oops! Yesterday!", action: #selector(generateYesterDayVideo), keyEquivalent: "3")
+        menu.addItem(yesterdayVideoButton)
         
         // remove
 //        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
@@ -433,6 +435,37 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             alert.runModal()
         }
  
+    }
+    
+    // MARK: generate time-lapse video for yesterday screeenshots
+    @objc func generateYesterDayVideo(){
+        print("generate yesterday video here")
+        var YesterdayFolderPath : String = ""
+        let yesterdayDay = String(Date.yesterday.returnDay)
+        let yesterdayMonth = String(Date.yesterday.returnMonth)
+        let yesterdayYear = String(Date.yesterday.returnYear)
+        let yesterdayFolderName = yesterdayMonth + "-" + yesterdayDay + "-" + yesterdayYear
+        
+        YesterdayFolderPath = getHomePath() + "/Documents/TimeLapseVideo/Screenshots/" + yesterdayFolderName
+        
+        if(FileManager.default.fileExists(atPath: YesterdayFolderPath)){
+            print("Yesterdday's screenshot folder is already existed!")
+            // create time-lapse videos
+            let ffmpegHandler = ffmpegClass()
+            let outputPath = Repository.downloadingVideosFolderPathString
+            ffmpegHandler.basicFunction(inputFilePath: YesterdayFolderPath, outputFilePath: outputPath)
+
+        }
+        else{
+            print("Yesterday, you didn't take any screenshots!")
+            // do...
+            let alert = NSAlert()
+            alert.messageText = "Yesterday, you didn't take any screenshots!"
+            alert.informativeText = "Please remember to record your today activities. "
+            alert.alertStyle = NSAlert.Style.warning
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
+        }
     }
     
     // get a list of all folders
@@ -690,4 +723,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
         // return completionHandler([.list, .sound])
     }
+}
+
+extension Date {
+    static var yesterday: Date{return Date().dayBefore}
+    
+    var dayBefore: Date{
+        return Calendar.current.date(byAdding: .day, value: -1, to:noon)!
+    }
+    var noon: Date{
+        return Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: self)!
+    }
+    
+    var returnDay: Int{
+        return Calendar.current.component(.day, from: self)
+    }
+    var returnMonth: Int {
+        return Calendar.current.component(.month, from: self)
+    }
+    
+    var returnYear: Int {
+        return Calendar.current.component(.year, from: self)
+    }
+    
 }
