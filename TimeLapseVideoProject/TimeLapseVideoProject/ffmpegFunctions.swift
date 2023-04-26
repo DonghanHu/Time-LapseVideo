@@ -76,7 +76,7 @@ class ffmpegClass {
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         process.arguments = [
-            "-r", "24", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+            "-r", "12", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
             outputFileName
 

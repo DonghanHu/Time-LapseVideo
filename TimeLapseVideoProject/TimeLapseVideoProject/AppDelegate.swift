@@ -78,8 +78,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         if let button = statusItem.button {
             // button.title = "T"
-            
-            button.image = NSImage(named: NSImage.quickLookTemplateName);
+            // quickLookTemplateName
+            button.image = NSImage(named: "videoIcon");
 //            button.image = NSImage(pasteboardPropertyList: "1.circle", ofType: NSPasteboard.PasteboardType(rawValue: "1"))
             
         }
@@ -90,6 +90,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         // create a default folder for saving screenshots
         checkDefaultFolder(folderPath: defaultFolderPathString)
+        
+        let savingVideoFolderPathString = getHomePath() + "/Documents/" + "TimeLapseVideo/Videos/"
+        checkDefaultFolder(folderPath: savingVideoFolderPathString)
         
         // take a testing screenshot while launching the application for asking request
          takeTestingImage()
@@ -151,7 +154,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         sleep(1)
         
         // set default folder to save created time-lapse videos： Downloads folder
-        let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
+        // let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
+        // changed to "Documents/timelapsevideo"
+        let defaultDownloadingVideosFolderPath = getHomePath() + "/Documents/TimeLapseVideo/Videos/"
         Repository.downloadingVideosFolderPathString = defaultDownloadingVideosFolderPath
         Repository.downloadingVideosFolderPathURL = URL(string: defaultDownloadingVideosFolderPath)
         
@@ -202,6 +207,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         let yesterdayVideoButton = NSMenuItem(title: "oops! Yesterday!", action: #selector(generateYesterDayVideo), keyEquivalent: "3")
         menu.addItem(yesterdayVideoButton)
         
+        let openFolderButton = NSMenuItem(title: "Open Folder", action: #selector(openVideoFolder), keyEquivalent: "4")
+        menu.addItem(openFolderButton)
+        
+        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(createAllVideos), keyEquivalent: "5")
+        menu.addItem(generateAllVideos)
+        
         // remove
 //        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
 //        menu.addItem(testButton)
@@ -215,6 +226,102 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
         statusItem.menu = menu
+    }
+    
+    // function to create all videos that are missing
+    // code here
+    @objc func createAllVideos(){
+        var videoFolder = getHomePath() + "/Documents/TimeLapseVideo/Videos/"
+        var sceenshotFolderNumber: Int = 0
+        var timelapseVideoNumber: Int = 0
+        var timelapseVideoNameArray: [String] = []
+        var screenshotsFolderNameArray: [String] = []
+        let fileManager = FileManager.default
+        var error : NSError?
+        
+        let date = Date()
+        let calendar = NSCalendar.current
+        let CurrentYear = calendar.component(.year, from: date)
+        
+        do{
+            let videoNameArray = try? FileManager.default.contentsOfDirectory(atPath: videoFolder) as [String]
+            timelapseVideoNameArray = videoNameArray ?? []
+            let numberOfItems = try FileManager.default.contentsOfDirectory(atPath: videoFolder).count
+            timelapseVideoNumber = numberOfItems
+        }catch{
+            print("error: \(error)")
+        }
+        
+        var screenshotDailyFolder = getHomePath() + "/Documents/TimeLapseVideo/Screenshots/"
+        if fileManager.fileExists(atPath: screenshotDailyFolder){
+            print("screenshot folder is existed")
+            do {
+                let screenshotsFolderArray = try? FileManager.default.contentsOfDirectory(atPath: screenshotDailyFolder) as [String]
+                screenshotsFolderNameArray = screenshotsFolderArray ?? []
+                let numberOfFolders = try FileManager.default.contentsOfDirectory(atPath: screenshotDailyFolder).count
+                sceenshotFolderNumber = numberOfFolders
+            } catch{
+                print("error: \(error)")
+            }
+        } else{
+            print("screenshot folder is not existed under document/timelapsevideo directory")
+        }
+        
+        // output "MM.dd,HH-mm-ss" output03.01,23-45-26.mp4
+        // 4-11-2023
+        let tA = timelapseVideoNameArray
+        // screenshots folder should always greater or equal to timelapse videos
+        for i in tA {
+            print(i)
+            if(i == ".DS_Store"){
+                continue
+            } else{
+                let start = i.index(i.startIndex, offsetBy: 6)
+                let end = i.index(i.endIndex, offsetBy: -16)
+                let range = start..<end
+                let monthSection = i[range]
+                let start1 = i.index(i.startIndex, offsetBy: 9)
+                let end1 = i.index(i.endIndex, offsetBy: -13)
+                let range1 = start..<end
+                let daySection = i[range1]
+                let month = removeZero(str: String(monthSection))
+                let day = removeZero(str: String(daySection))
+                let newFolderName = month + "-" + day + "-" + String(CurrentYear)
+                print(newFolderName)
+                
+            }
+        }
+        
+        
+    }
+    // funciton remove 0 at the begining of month and day
+    func removeZero(str: String) -> String{
+        let characters = Array(str)
+        if characters[0] == "0"{
+            let res = characters[1]
+            return String(res)
+        } else{
+            return str
+        }
+    }
+    
+    // function to open video folder
+    @objc func openVideoFolder(){
+        let documentFolderPath = getHomePath() + "/Documents/TimeLapseVideo"
+        if(FileManager.default.fileExists(atPath: documentFolderPath)){
+            print("Target folder is already existed!")
+            NSWorkspace.shared.open(
+                URL(
+                    fileURLWithPath: documentFolderPath,
+                    isDirectory: true
+                )
+            )
+        }
+        else{
+            print("/Documents/TimeLapseVideo/ not existed")
+            
+        }
+
     }
     
     // function to set notification on weekdays

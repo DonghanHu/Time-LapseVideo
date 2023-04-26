@@ -57,6 +57,24 @@ class takeScreenshots{
         }
     }
     
+    // function to check is today's folder exist. otherwise, create a new folder
+    func checkTodayScreenShotFolder(folderPath: String) -> Bool{
+        if(FileManager.default.fileExists(atPath: folderPath)){
+            print("default folder for today's screenshots is already existed!")
+            return true;
+        }
+        else{
+            do {
+                try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
+                print("created folder successfully! ")
+            } catch{
+                print("screenshot's folder created failed!")
+                print(error)
+            }
+            return false;
+        }
+    }
+    
     // return today's folder path
     func returnCurrentFolder() -> String{
         let currentDate = getCurrentMonth() + "-" + getCurrentDay() + "-" + getCurrentYear()
@@ -72,6 +90,25 @@ class takeScreenshots{
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "YYYY.MM.dd,HH-mm-ss"
         let dateString = dateFormatter.string(from: date)
+        
+        // MARK: check date whenever take a new screenshot
+        let TodayDate = NSDate()
+        let calendar = NSCalendar.current
+        let TodayDay = calendar.component(.day, from: date)
+        let TodayMonth = calendar.component(.month, from: date)
+        let Todayyear = calendar.component(.year, from: date)
+        let folderPathStringForChecking = getCurrentMonth() + "-" + getCurrentDay() + "-" + getCurrentYear()
+        if(checkTodayScreenShotFolder(folderPath: folderPathStringForChecking)){
+            // folder existed, not a new day
+            // do nothing
+        } else{
+            // a new day begins, saving screenshots to new folder
+            let newScreenshotFolderPath = Repository.defaultFolderPathString + folderPathStringForChecking
+            tempFolderPathString = newScreenshotFolderPath
+            // reset
+            Repository.dailyScreenshotFolderString = newScreenshotFolderPath
+        }
+        
         
         
         let task = Process()
