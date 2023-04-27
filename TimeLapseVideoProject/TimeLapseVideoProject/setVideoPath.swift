@@ -64,6 +64,9 @@ class setVideoPath: NSWindowController {
         
     }
     
+    @IBAction func newButtonAction(_ sender: Any) {
+        print("123")
+    }
     // click button with "change" title
     @IBAction func setFolderPathAction(_ sender: Any) {
         

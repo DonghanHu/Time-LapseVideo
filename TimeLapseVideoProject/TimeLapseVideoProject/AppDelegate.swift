@@ -25,6 +25,11 @@ struct Repository {
     
 }
 
+struct Setting {
+    static var frameRate : Int                      =   12
+    static var captureInterval : Int                =   10
+}
+
 struct DailyCounter {
     // null value
     static var dateStr                              =   ""
@@ -51,6 +56,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     private var watchButton: NSMenuItem!
     private var saveFolderButton: NSMenuItem!
     
+    private var settingButton: NSMenuItem!
+    
     private var recordingFlag: Bool!
     
     private var timeInterval = 10.0
@@ -59,6 +66,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     
     private var setVideoDownloadingPathWindowController: setVideoPath?
+    private var setParametersController: videoWatchWindow?
     
     // notification center
     let un = UNUserNotificationCenter.current()
@@ -66,13 +74,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-//        window = NSWindow(
-//            contentRect: NSRect(x: 0, y: 0, width: 480, height: 270),
-//            styleMask: [.miniaturizable, .closable, .resizable, .titled],
-//            backing: .buffered, defer: false)
-//        window.center()
-//        window.title = "No Storyboard Window"
-//        window.makeKeyAndOrderFront(nil)
         
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
@@ -204,14 +205,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // remove
 //        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
 //        menu.addItem(saveFolderButton)
+        
         let yesterdayVideoButton = NSMenuItem(title: "oops! Yesterday!", action: #selector(generateYesterDayVideo), keyEquivalent: "3")
         menu.addItem(yesterdayVideoButton)
         
         let openFolderButton = NSMenuItem(title: "Open Folder", action: #selector(openVideoFolder), keyEquivalent: "4")
         menu.addItem(openFolderButton)
         
-        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(createAllVideos), keyEquivalent: "5")
-        menu.addItem(generateAllVideos)
+        settingButton = NSMenuItem(title: "Setting", action: #selector(settingWindow) , keyEquivalent: "Q")
+        menu.addItem(settingButton)
+//        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(createAllVideos), keyEquivalent: "5")
+//        menu.addItem(generateAllVideos)
         
         // remove
 //        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
@@ -220,12 +224,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // button for testing notifiaction setting
 //        let notificationButton = NSMenuItem(title: "notification", action: #selector(didTapFive), keyEquivalent: "5")
         // menu.addItem(notificationButton)
+        
         // add a line separator
         menu.addItem(NSMenuItem.separator())
 
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
         statusItem.menu = menu
+    }
+    
+    // function for opening the setting window
+    @objc func settingWindow(){
+        
+        setParametersController = videoWatchWindow()
+        setParametersController?.showWindow(self)
+        setParametersController?.window?.level = .mainMenu + 1
+        
     }
     
     // function to create all videos that are missing
@@ -491,10 +505,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             
             takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
             
+
             // not taking a ascreenshot at the time when click this button
-            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
+            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Setting.captureInterval), repeats: true, block: { _ in
                 takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
             })
+//            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
+//                takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
+//            })
             
         }else {
             startButton.title = "Start Recording"

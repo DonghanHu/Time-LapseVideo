@@ -75,12 +75,16 @@ class ffmpegClass {
         let dateString = dateFormatter.string(from: date)
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
-        process.arguments = [
-            "-r", "12", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
-            "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
-            outputFileName
-
-        ]
+        let frameRateString = String(Setting.captureInterval)
+        process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             outputFileName]
+        // original one
+//        process.arguments = [
+//            "-r", "12", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+//            "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+//            outputFileName
+//        ]
         //print("\"*?jpg\"")
 
         print(process.arguments)
