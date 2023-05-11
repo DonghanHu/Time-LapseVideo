@@ -498,6 +498,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         if (startButtonTitle == "Start Recording"){
             startButton.title = "Stop Recording"
             
+            self.statusItem.button?.image = NSImage(named: "recordIcon");
             // set the recording flag to true
             recordingFlag = true
             let takeScreenshotsObject = takeScreenshots()
@@ -517,6 +518,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }else {
             startButton.title = "Start Recording"
             // set the recording flag to false
+            self.statusItem.button?.image = NSImage(named: "videoIcon");
             recordingFlag = false
             
             // stop the timer
