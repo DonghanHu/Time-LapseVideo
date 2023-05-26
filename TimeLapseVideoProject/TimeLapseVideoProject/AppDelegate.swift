@@ -355,22 +355,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 let weekdays = [2, 3, 4, 5, 6]
                 
                 for day in weekdays {
+                    
                     let weekday = Int(day)
+                    print("this is day: ", weekday)
                     var components = DateComponents()
                     components.hour = 17
                     components.minute = 0
                     components.second = 0
-                    // not sure how this works, but this is essential to reset weekday in triggerweekly
-                    components.weekdayOrdinal = 10
                     components.weekday = weekday
+                    // not sure how this works, but this is essential to reset weekday in triggerweekly
+                    // components.weekdayOrdinal = 1
+                    components.weekdayOrdinal = 6
                     components.timeZone = .current
                     let calendar = Calendar(identifier: .gregorian)
                     let calenderDate = calendar.date(from: components)!
-                    
-                    var triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second,], from: calenderDate)
+                    var triggerWeekly = Calendar.current.dateComponents([.weekday,.hour,.minute,.second], from: calenderDate)
                     triggerWeekly.isLeapMonth = false
 //                    print(type(of: weekday))
-//                    print(triggerWeekly)
+                    print("this is triggerWeekly")
+                    print(triggerWeekly)
+                    print("this is weekday")
+                    print(triggerWeekly.weekday)
                     
                     let trigger = UNCalendarNotificationTrigger(dateMatching: triggerWeekly, repeats: true)
 
