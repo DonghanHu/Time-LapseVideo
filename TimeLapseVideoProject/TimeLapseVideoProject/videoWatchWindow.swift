@@ -24,17 +24,26 @@ class videoWatchWindow: NSWindowController{
     @IBOutlet weak var frameRateLabel: NSTextField!
     @IBOutlet weak var confirmButton: NSButton!
     
+    @IBOutlet weak var secondLabel1: NSTextField!
+    
+    @IBOutlet weak var secondLabel2: NSTextField!
+    
     override func windowDidLoad() {
         super.windowDidLoad()
 
         print("watch time-lapse video window")
-        confirmButton.title = "Setting"
+        confirmButton.title = "Save"
         
         fameRateField.stringValue = String(Setting.frameRate)
         captureIntervalField.stringValue = String(Setting.captureInterval)
         
-        frameRateLabel.stringValue = "Frame rate should be within 5 and 30 for higher video quality"
-        captureIntervalLabel.stringValue = "Captuer Interval should be within 5 and 15 for taking enough photos"
+        secondLabel1.stringValue = "Hz"
+        secondLabel2.stringValue = "seconds"
+        
+        frameRateLabel.stringValue = "Frame rate (How many images per second for generated time-lapse vidoes, for higher quality, should be between 5 and 30)"
+        // frameRateLabel.stringValue = "Frame rate should be within 5 and 30 for higher video quality"
+        // Capture interval (How often does the app take a screenshot)
+        captureIntervalLabel.stringValue = "Capture interval (How often does the app take a screenshot, for higher quality, should be between 5 and 15)"
         
 //        let settings = RenderSettings()
 //        let imageAnimator = ImageAnimator(renderSettings: settings)
@@ -71,6 +80,7 @@ class videoWatchWindow: NSWindowController{
         
         print(Setting.frameRate)
         print(Setting.captureInterval)
+        self.window?.close()
     }
     
 }
