@@ -64,6 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     private var takingScreenshotsTimer = Timer()
     
+    private var timerMonitorThread = Thread()
     
     private var setVideoDownloadingPathWindowController: setVideoPath?
     private var setParametersController: videoWatchWindow?
@@ -168,7 +169,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             print("default folder for saving videos does not exist")
             // do...
         }
+        
+        timerMonitorThread = Thread(target: self, selector: #selector(timerValidationChecking), object: nil)
+        timerMonitorThread.start()
 
+    }
+    
+    @objc func timerValidationChecking() {
+        while(timerMonitorThread.isExecuting == true){
+            if (takingScreenshotsTimer.isValid){
+                // print("timer is running")
+                startButton.title = "Stop Recording"
+                DispatchQueue.main.sync {
+                    self.statusItem.button?.image = NSImage(named: "recordIcon");
+                }
+                
+            } else {
+                // print("timer is stopped")
+                startButton.title = "Start Recording"
+                DispatchQueue.main.sync {
+                    self.statusItem.button?.image = NSImage(named: "videoIcon");
+                }
+                
+            }
+        }
     }
     
     @objc func getPendingNotifications() async {
@@ -214,8 +238,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         settingButton = NSMenuItem(title: "Setting", action: #selector(settingWindow) , keyEquivalent: "Q")
         menu.addItem(settingButton)
-//        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(createAllVideos), keyEquivalent: "5")
-//        menu.addItem(generateAllVideos)
+        
+        
+        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(generateAllVideosFunc), keyEquivalent: "5")
+        menu.addItem(generateAllVideos)
         
         // remove
 //        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
@@ -228,9 +254,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // add a line separator
         menu.addItem(NSMenuItem.separator())
 
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-
+        // menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "q"))
+        
         statusItem.menu = menu
+    }
+    
+    @objc func quitApplication(){
+        timerMonitorThread.cancel()
+        print("thread is cancelled or not: ", timerMonitorThread.isCancelled)
+        exit(0)
     }
     
     // function for opening the setting window
@@ -240,6 +273,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         setParametersController?.showWindow(self)
         setParametersController?.window?.level = .mainMenu + 1
         
+    }
+    
+    
+    @objc func generateAllVideosFunc() {
+        var screenshotFolder = getHomePath() + "/Documents/TimeLapseVideo/Screenshots/"
+        let fileManager = FileManager.default
+        var error : NSError?
+        do{
+            let folderArray = try? FileManager.default.contentsOfDirectory(atPath: screenshotFolder) as [String]
+            let numberOfFolders = folderArray?.count
+            print(numberOfFolders)
+            // should exclude ".DS_Store"
+            print(folderArray)
+        }catch{
+            print("error: \(error)")
+        }
     }
     
     // function to create all videos that are missing
@@ -743,6 +792,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
     // function to quit the menu bar application
     func applicationWillTerminate(_ aNotification: Notification) {
+        timerMonitorThread.cancel()
         // Insert code here to tear down your application
     }
 
