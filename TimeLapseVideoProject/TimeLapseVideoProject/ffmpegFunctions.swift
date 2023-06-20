@@ -74,11 +74,25 @@ class ffmpegClass {
         dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
         let dateString = dateFormatter.string(from: date)
         
+        
+        // new name format of genearted Time-lapse videos
+        let dateFormattermmddyyyy = DateFormatter()
+        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
+        
+        let createdVideoName = "TimeLapseVideo" + dateString + ".mp4"
+        let createdVideoFilePath = outputFilePath + createdVideoName
+        
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         let frameRateString = String(Setting.captureInterval)
+        // with old time-lapse video name
+//        process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+//                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+//                             outputFileName]
+        // name start with "TimeLapseVideo"
         process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
-                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
-                             outputFileName]
+                                     "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             createdVideoFilePath]
         // original one
 //        process.arguments = [
 //            "-r", "12", "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
@@ -95,6 +109,61 @@ class ffmpegClass {
         
         print("video done")
     }
+    
+    
+    // create a new video with temporary name
+    func createTimeLapseVideoWithTempName(inputFilePath: String, outputFilePath: String) {
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        let process = Process()
+        
+        print("current: " + process.currentDirectoryPath)
+        print(URL(string: inputFilePath))
+        print(URL(string: inputFilePath)?.absoluteString)
+        print("current: " + process.currentDirectoryPath)
+        process.launchPath = launchPath
+
+        
+        let imagesFolderPath = inputFilePath + "/*?jpg"
+
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
+        let dateString = dateFormatter.string(from: date)
+        
+        
+        // new name format of genearted Time-lapse videos
+        let dateFormattermmddyyyy = DateFormatter()
+        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
+        
+        let createdVideoName = "Temp" + dateString + ".mp4"
+        let createdVideoFilePath = outputFilePath + createdVideoName
+        
+        let outputFileName = outputFilePath + "output" + dateString + ".mp4"
+        
+        let frameRateString = String(Setting.captureInterval)
+        process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             createdVideoFilePath]
+
+        print(process.arguments)
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        
+        process.waitUntilExit()
+        
+        print("temp video is done")
+    }
+    
+    func stitchTwoVideoSideBySide(firstFilePath: String, secondFilePath: String){
+        // ffmpeg -i /Users/donghanhu/Downloads/test1.mp4 -i /Users/donghanhu/Downloads/test2.mp4 -filter_complex "concat=n=2" /Users/donghanhu/Downloads/test3.mp4
+        
+        
+    }
+    
     
     // return a process and dispatchWorkItem, code this later
     // callback: @escaping (Bool) -> Void) -> (Process, DispatchWorkItem)?

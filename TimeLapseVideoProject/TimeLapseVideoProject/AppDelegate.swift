@@ -277,18 +277,154 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     
     @objc func generateAllVideosFunc() {
+        // step 1: get the list of folders
+        // step 2: for each folder, create a video name and check if it is already existed in the video folder
+        // step 3: create video for corresponding screenshot folders
+        // step 4: corner cases: today and yesterday, no matter what, generate two videos for covering all screenshots
+        
+        var screenshotFolderNameList = [String]()
+        var screenshotFolderNameListCount = 0
+        let ffmpegHandler = ffmpegClass()
         var screenshotFolder = getHomePath() + "/Documents/TimeLapseVideo/Screenshots/"
+        let defaultOutputPath = Repository.downloadingVideosFolderPathString
+        
+        
         let fileManager = FileManager.default
         var error : NSError?
         do{
             let folderArray = try? FileManager.default.contentsOfDirectory(atPath: screenshotFolder) as [String]
             let numberOfFolders = folderArray?.count
-            print(numberOfFolders)
             // should exclude ".DS_Store"
-            print(folderArray)
+            screenshotFolderNameList = folderArray!
         }catch{
             print("error: \(error)")
         }
+        
+        // remove ".DS_Store" from screenshot folder
+        if let index = screenshotFolderNameList.firstIndex(of: ".DS_Store") {
+            screenshotFolderNameList.remove(at: index)
+        }
+        print("the name list of screenshot folder: ", screenshotFolderNameList)
+        
+        // get existed time-lapse video names
+        var videosNameList = [String]()
+        let videosNameListCount = 0
+        do {
+            let folderArray = try? FileManager.default.contentsOfDirectory(atPath: defaultOutputPath) as [String]
+            videosNameList = folderArray!
+        } catch {
+            print("error: \(error)")
+        }
+        // remove ".DS_Store" from video folder
+        // remove ".DS_Store"
+        if let index = videosNameList.firstIndex(of: ".DS_Store") {
+            videosNameList.remove(at: index)
+        }
+        print("the name list of video folder: ", videosNameList)
+        screenshotFolderNameListCount = screenshotFolderNameList.count
+        
+        for scrFolderName in screenshotFolderNameList {
+            let tempFolderNameInputFilePath = Repository.defaultFolderPathString + scrFolderName
+            print("this is single screenshot folder name: ", tempFolderNameInputFilePath)
+            // input is tempFolderName
+            var desiredVideoFileName = transferScreenshotFolderToVideoFolder(folderName: scrFolderName)
+            print("desired corresponding time-lapse video name is:", desiredVideoFileName)
+            if(videosNameList.contains(desiredVideoFileName)){
+                // already has this video
+                // check this out later
+                var isToday = checkToday(str: scrFolderName)
+                var isYesterday = checkYesterday(str: scrFolderName)
+                print("is today: ", isToday, "isYesterday: ", isYesterday)
+                // if today and existed
+                // step 1: create a new video with a temporary name
+                // step: stitch two together
+                
+                
+                // if yesterday and existed
+                // delete the old one and create a new one
+                
+                continue
+            } else {
+                var isToday = checkToday(str: scrFolderName)
+                var isYesterday = checkYesterday(str: scrFolderName)
+                print("is today: ", isToday, "isYesterday: ", isYesterday)
+                // doesn't have this video file name, create a new video
+                // comment for now
+                // ffmpegHandler.basicFunction(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                //
+            }
+        }
+        
+        
+        
+    }
+    
+    // check the date if is today
+    func checkToday(str : String) -> Bool {
+        // str is screenshot folder name
+        let components = str.components(separatedBy: "-")
+        var month = components[0]
+        var day = components[1]
+        var year = components[2]
+        
+        let date = Date()
+        let calendar = NSCalendar.current
+        let CalendarDay = calendar.component(.day, from: date)
+        let CalendarMonth = calendar.component(.month, from: date)
+        let CalendarYear = calendar.component(.year, from: date)
+        
+        let dayString = String(CalendarDay)
+        let monthString = String(CalendarMonth)
+        let yearString = String(CalendarYear)
+        
+        return day == dayString && month == monthString && year == yearString
+        
+    }
+    // check the date if is yesterday
+    func checkYesterday(str: String) -> Bool {
+        // str is screenshot folder name
+        let components = str.components(separatedBy: "-")
+        var month = components[0]
+        var day = components[1]
+        var year = components[2]
+        
+        let yesterdayDay = String(Date.yesterday.returnDay)
+        let yesterdayMonth = String(Date.yesterday.returnMonth)
+        let yesterdayYear = String(Date.yesterday.returnYear)
+        let yesterday = Date.yesterday
+        
+        print(yesterday)
+        print("yesterday is: ", day, month, year)
+        print(type(of: yesterday)) // Date
+        let yesterdayDate = Calendar.current.dateComponents([.day], from: yesterday)
+        print(type(of: yesterdayDate)) // DateComponents
+        print(type(of: yesterdayDate.day))
+        let yesterdayInt = (yesterdayDate.day!) as Int
+        let yesterdayDateInString = "\(yesterdayDate.day)"
+        print(yesterdayInt)
+        let yesterdayStr = String(yesterdayInt)
+        print(String(yesterdayInt))
+        print(yesterdayDateInString)
+        
+        return day == yesterdayStr && month == yesterdayMonth && year == yesterdayYear
+        
+    }
+    
+    func transferScreenshotFolderToVideoFolder(folderName: String) -> String{
+        let components = folderName.components(separatedBy: "-")
+        var month = components[0]
+        var day = components[1]
+        var year = components[2]
+        if (month.count < 2){
+            month = "0" + month
+        }
+        if(day.count < 2){
+            day = "0" + day
+        }
+        // + ".mp4"?
+        return "TimeLapseVideo" + month + day + year + ".mp4"
+        // return month + "-" + day + "-" + year
+        
     }
     
     // function to create all videos that are missing
@@ -911,10 +1047,10 @@ extension Date {
     static var yesterday: Date{return Date().dayBefore}
     
     var dayBefore: Date{
-        return Calendar.current.date(byAdding: .day, value: -1, to:noon)!
+        return Calendar.current.date(byAdding: .day, value: -1, to: noon)!
     }
     var noon: Date{
-        return Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: self)!
+        return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: self)!
     }
     
     var returnDay: Int{
