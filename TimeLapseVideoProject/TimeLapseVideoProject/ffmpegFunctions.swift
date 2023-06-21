@@ -158,9 +158,69 @@ class ffmpegClass {
         print("temp video is done")
     }
     
-    func stitchTwoVideoSideBySide(firstFilePath: String, secondFilePath: String){
+    // create a new video and overwrite if file existed
+    func createAndOverwriteTimeLapseVideoWithTempName(inputFilePath: String, outputFilePath: String) {
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        let process = Process()
+        
+        process.launchPath = launchPath
+
+        
+        let imagesFolderPath = inputFilePath + "/*?jpg"
+
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
+        let dateString = dateFormatter.string(from: date)
+        
+        
+        // new name format of genearted Time-lapse videos
+        let dateFormattermmddyyyy = DateFormatter()
+        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
+        
+        let createdVideoName = "Temp" + dateString + ".mp4"
+        let createdVideoFilePath = outputFilePath + createdVideoName
+        
+        let outputFileName = outputFilePath + "output" + dateString + ".mp4"
+        
+        let frameRateString = String(Setting.captureInterval)
+        process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             createdVideoFilePath]
+
+        print(process.arguments)
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        
+        process.waitUntilExit()
+        
+        print("temp video is done")
+    }
+    
+    func stitchTwoVideoSideBySide(firstFilePath: String, secondFilePath: String, outputFilePath: String){
         // ffmpeg -i /Users/donghanhu/Downloads/test1.mp4 -i /Users/donghanhu/Downloads/test2.mp4 -filter_complex "concat=n=2" /Users/donghanhu/Downloads/test3.mp4
         
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        let process = Process()
+        process.launchPath = launchPath
+        
+        process.arguments = ["-i", firstFilePath, "-i", secondFilePath, "-filter_complex", "concat=n=2",
+                             outputFilePath]
+
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        
+        process.waitUntilExit()
+        
+        print("stitch videos is done")
+
         
     }
     

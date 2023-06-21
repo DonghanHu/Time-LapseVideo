@@ -335,21 +335,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 var isToday = checkToday(str: scrFolderName)
                 var isYesterday = checkYesterday(str: scrFolderName)
                 print("is today: ", isToday, "isYesterday: ", isYesterday)
-                // if today and existed
-                // step 1: create a new video with a temporary name
-                // step: stitch two together
+
+                // Use the -y option to automatically overwrite
+                // ffmpeg -y -i input.flac output.mp3
                 
-                
-                // if yesterday and existed
-                // delete the old one and create a new one
+                // create a new video and replace old ones
+                print("this is inputfilepath: ", tempFolderNameInputFilePath)
+                print("this is outputfilepath: ", defaultOutputPath)
+                // ffmpegHandler.createAndOverwriteTimeLapseVideoWithTempName(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
                 
                 continue
             } else {
                 var isToday = checkToday(str: scrFolderName)
                 var isYesterday = checkYesterday(str: scrFolderName)
                 print("is today: ", isToday, "isYesterday: ", isYesterday)
+                
+                print("this is inputfilepath: ", tempFolderNameInputFilePath)
+                print("this is outputfilepath: ", defaultOutputPath)
                 // doesn't have this video file name, create a new video
-                // comment for now
+                // comment this line for now
                 // ffmpegHandler.basicFunction(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
                 //
             }
