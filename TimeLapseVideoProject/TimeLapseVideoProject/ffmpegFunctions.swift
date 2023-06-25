@@ -158,7 +158,7 @@ class ffmpegClass {
         print("temp video is done")
     }
     
-    // create a new video and overwrite if file existed
+    // create a new video with "temp" name and overwrite if file existed
     func createAndOverwriteTimeLapseVideoWithTempName(inputFilePath: String, outputFilePath: String) {
         guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
             print("error in ffmpeg launch path")
@@ -186,6 +186,100 @@ class ffmpegClass {
         let createdVideoFilePath = outputFilePath + createdVideoName
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
+        
+        let frameRateString = String(Setting.captureInterval)
+        process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             createdVideoFilePath]
+
+        print(process.arguments)
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        
+        process.waitUntilExit()
+        
+        print("temp video is done")
+    }
+    
+    // create a new video and overwrite if file existed
+    func createAndOverwriteTimeLapseVideo(inputFilePath: String, outputFilePath: String) {
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        let process = Process()
+        
+        process.launchPath = launchPath
+
+        
+        let imagesFolderPath = inputFilePath + "/*?jpg"
+//
+        let date = Date()
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
+//        let dateString = dateFormatter.string(from: date)
+    
+        // new name format of genearted Time-lapse videos
+        let dateFormattermmddyyyy = DateFormatter()
+        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
+        
+        let createdVideoName = "TimeLapseVideo" + dateStringmmddyyyy + ".mp4"
+        let createdVideoFilePath = outputFilePath + createdVideoName
+        
+        // let outputFileName = outputFilePath + "output" + dateString + ".mp4"
+        
+        let frameRateString = String(Setting.captureInterval)
+        process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
+                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
+                             createdVideoFilePath]
+
+        print(process.arguments)
+        process.standardInput = FileHandle.nullDevice
+        process.launch()
+        
+        process.waitUntilExit()
+        
+        print("temp video is done")
+    }
+    
+    // create video for past folders with corresponding names
+    func createAndOverwriteTimeLapseVideoForPastDate(scrFolderName: String, inputFilePath: String, outputFilePath: String) {
+        guard let launchPath = Bundle.main.path(forResource: "ffmpeg", ofType: "") else{
+            print("error in ffmpeg launch path")
+            return
+        }
+        let process = Process()
+        
+        process.launchPath = launchPath
+
+        let imagesFolderPath = inputFilePath + "/*?jpg"
+//
+        let date = Date()
+    
+        // new name format of genearted Time-lapse videos
+        let dateFormattermmddyyyy = DateFormatter()
+        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
+        
+        // srcFolderName format: xx-xx-xxxx
+        let dateComponents = scrFolderName.components(separatedBy: "-")
+        var month = dateComponents[0]
+        var day = dateComponents[1]
+        var year = dateComponents[2]
+        if (month.count < 2){
+            month = "0" + month
+        }
+        if(day.count < 2) {
+            day = "0" + day
+        }
+        
+        let pastDateString = month + day + year
+        
+        let createdVideoName = "TimeLapseVideo" + pastDateString + ".mp4"
+        let createdVideoFilePath = outputFilePath + createdVideoName
+        
+        // let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         
         let frameRateString = String(Setting.captureInterval)
         process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,

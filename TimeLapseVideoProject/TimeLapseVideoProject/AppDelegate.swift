@@ -223,25 +223,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         startButton = NSMenuItem(title: "Start Recording", action: #selector(didTapOne) , keyEquivalent: "1")
         menu.addItem(startButton)
 
-        watchButton = NSMenuItem(title: "Generate Today Video", action: #selector(didTapTwo) , keyEquivalent: "2")
-        menu.addItem(watchButton)
+//        watchButton = NSMenuItem(title: "Generate Today Video", action: #selector(didTapTwo) , keyEquivalent: "2")
+//        menu.addItem(watchButton)
         
         // remove
 //        saveFolderButton = NSMenuItem(title: "Video Path", action: #selector(didTapThree) , keyEquivalent: "3")
 //        menu.addItem(saveFolderButton)
         
-        let yesterdayVideoButton = NSMenuItem(title: "oops! Yesterday!", action: #selector(generateYesterDayVideo), keyEquivalent: "3")
-        menu.addItem(yesterdayVideoButton)
+//        let yesterdayVideoButton = NSMenuItem(title: "oops! Yesterday!", action: #selector(generateYesterDayVideo), keyEquivalent: "3")
+//        menu.addItem(yesterdayVideoButton)
         
-        let openFolderButton = NSMenuItem(title: "Open Folder", action: #selector(openVideoFolder), keyEquivalent: "4")
+        
+        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(generateAllVideosFunc), keyEquivalent: "2")
+        menu.addItem(generateAllVideos)
+        
+        let openFolderButton = NSMenuItem(title: "Open Folder", action: #selector(openVideoFolder), keyEquivalent: "3")
         menu.addItem(openFolderButton)
         
-        settingButton = NSMenuItem(title: "Setting", action: #selector(settingWindow) , keyEquivalent: "Q")
+        settingButton = NSMenuItem(title: "Setting", action: #selector(settingWindow) , keyEquivalent: "4")
         menu.addItem(settingButton)
         
-        
-        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(generateAllVideosFunc), keyEquivalent: "5")
-        menu.addItem(generateAllVideos)
+
         
         // remove
 //        let testButton = NSMenuItem(title: "test button", action: #selector(getPendingNotifications) , keyEquivalent: "4")
@@ -286,6 +288,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         var screenshotFolderNameListCount = 0
         let ffmpegHandler = ffmpegClass()
         var screenshotFolder = getHomePath() + "/Documents/TimeLapseVideo/Screenshots/"
+        // /Documents/TimeLapseVideo/Videos/
         let defaultOutputPath = Repository.downloadingVideosFolderPathString
         
         
@@ -329,37 +332,85 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             // input is tempFolderName
             var desiredVideoFileName = transferScreenshotFolderToVideoFolder(folderName: scrFolderName)
             print("desired corresponding time-lapse video name is:", desiredVideoFileName)
+            
+            
+            print("tempFolderNameInputFilePath is: ", tempFolderNameInputFilePath)
+            print("defaultOutputPaht is: ", defaultOutputPath)
+            
+            
             if(videosNameList.contains(desiredVideoFileName)){
-                // already has this video
-                // check this out later
+                // this video is existed
+                
                 var isToday = checkToday(str: scrFolderName)
-                var isYesterday = checkYesterday(str: scrFolderName)
-                print("is today: ", isToday, "isYesterday: ", isYesterday)
-
+                
+                // condition 1: today's video, create a new one and overwrite the previous one
+                if(isToday) {
+                    print("vidoe existed and isToday")
+                    ffmpegHandler.createAndOverwriteTimeLapseVideo(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                    // do not revome this screenshot folder
+                }
+                // condition 2: yesterday or last time generating a video
+                else {
+                    print("vidoe existed and is not Today")
+                    // this is yesterday's screenshot folder, in case captured additional screenshots after geneateing a video from last time
+                    // create and overwite, remove this old screenshot folder
+                    ffmpegHandler.createAndOverwriteTimeLapseVideoForPastDate(scrFolderName: scrFolderName, inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                    // ffmpegHandler.createAndOverwriteTimeLapseVideo(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                    do {
+                        let fileManager = FileManager.default
+                        // Check if file exists
+                        let scrFolderNameURL = URL(string: tempFolderNameInputFilePath)
+                        if fileManager.fileExists(atPath: tempFolderNameInputFilePath) {
+                            print("folder existed")
+                            // Delete file, comment this line for now
+                            try fileManager.removeItem(atPath: tempFolderNameInputFilePath)
+                        } else {
+                            print("File does not exist")
+                        }
+                    } catch { print("An error took place: \(error)")}
+                    
+                }
+                
                 // Use the -y option to automatically overwrite
                 // ffmpeg -y -i input.flac output.mp3
                 
                 // create a new video and replace old ones
-                print("this is inputfilepath: ", tempFolderNameInputFilePath)
-                print("this is outputfilepath: ", defaultOutputPath)
-                // ffmpegHandler.createAndOverwriteTimeLapseVideoWithTempName(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
-                
-                continue
+                //                print("this is inputfilepath: ", tempFolderNameInputFilePath)
+                //                print("this is outputfilepath: ", defaultOutputPath)
             } else {
-                var isToday = checkToday(str: scrFolderName)
-                var isYesterday = checkYesterday(str: scrFolderName)
-                print("is today: ", isToday, "isYesterday: ", isYesterday)
+                // doesnt have this video with corresponding screenshot folder,
                 
-                print("this is inputfilepath: ", tempFolderNameInputFilePath)
-                print("this is outputfilepath: ", defaultOutputPath)
-                // doesn't have this video file name, create a new video
-                // comment this line for now
-                // ffmpegHandler.basicFunction(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
-                //
+                // if is today, create a new one
+                var isToday = checkToday(str: scrFolderName)
+                if(isToday) {
+                    //
+                    print("vidoe does not existed and isToday")
+                    ffmpegHandler.createAndOverwriteTimeLapseVideo(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                }
+                else {
+                    print("vidoe does not existed and is not Today")
+                    // this is not today's screenshot folder, forgot to create videos in the past few days
+                    // step 1: create videos for this screenshot folder
+                    ffmpegHandler.createAndOverwriteTimeLapseVideoForPastDate(scrFolderName: scrFolderName, inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                    // ffmpegHandler.createAndOverwriteTimeLapseVideo(inputFilePath: tempFolderNameInputFilePath, outputFilePath: defaultOutputPath)
+                    // step 2: remove this folder, because there is no more new screenshots for past days
+                    do {
+                        let fileManager = FileManager.default
+                        // Check if file exists
+                        let scrFolderNameURL = URL(string: tempFolderNameInputFilePath)
+                        if fileManager.fileExists(atPath: tempFolderNameInputFilePath) {
+                            print("folder existed")
+                            // Delete file, comment this line for now
+                            try fileManager.removeItem(atPath: tempFolderNameInputFilePath)
+                        } else {
+                            print("File does not exist")
+                        }
+                    } catch { print("An error took place: \(error)")}
+                    //                print("this is inputfilepath: ", tempFolderNameInputFilePath)
+                    //                print("this is outputfilepath: ", defaultOutputPath)
+                }
             }
         }
-        
-        
         
     }
     
@@ -817,7 +868,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                     let currentDate = Date()
                     // print(currentDate)
                     
-                    // one week for saving
+                    // one week for saving (7 days for now)
                     let pastTime = creationDate.addingTimeInterval(604800)
                     //if true, should be deleted
                     // print(currentDate > pastTime)
