@@ -234,10 +234,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 //        menu.addItem(yesterdayVideoButton)
         
         
-        let generateAllVideos = NSMenuItem(title: "Generate All Videos", action: #selector(generateAllVideosFunc), keyEquivalent: "2")
+        let generateAllVideos = NSMenuItem(title: "Generate Time-Lapse Videos", action: #selector(generateAllVideosFunc), keyEquivalent: "2")
         menu.addItem(generateAllVideos)
         
-        let openFolderButton = NSMenuItem(title: "Open Folder", action: #selector(openVideoFolder), keyEquivalent: "3")
+        let openFolderButton = NSMenuItem(title: "Open The Folder", action: #selector(openVideoFolder), keyEquivalent: "3")
         menu.addItem(openFolderButton)
         
         settingButton = NSMenuItem(title: "Setting", action: #selector(settingWindow) , keyEquivalent: "4")
