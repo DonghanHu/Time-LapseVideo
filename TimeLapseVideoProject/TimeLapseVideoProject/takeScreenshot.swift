@@ -71,8 +71,9 @@ class takeScreenshots{
                 print("screenshot's folder created failed!")
                 print(error)
             }
-            return false;
+            // return false;
         }
+        return false;
     }
     
     // return today's folder path
@@ -98,15 +99,23 @@ class takeScreenshots{
         let TodayMonth = calendar.component(.month, from: date)
         let Todayyear = calendar.component(.year, from: date)
         let folderPathStringForChecking = getCurrentMonth() + "-" + getCurrentDay() + "-" + getCurrentYear()
-        if(checkTodayScreenShotFolder(folderPath: folderPathStringForChecking)){
+        let fullFolderPathStringForChecking = Repository.defaultFolderPathString + folderPathStringForChecking
+        if(checkTodayScreenShotFolder(folderPath: fullFolderPathStringForChecking)){
             // folder existed, not a new day
             // do nothing
+            
+            print("In screenshtos class, today's screenshot folder is existed")
+            print("tempFolderPathString is: ", tempFolderPathString)
         } else{
+            print("In screenshtos class, today's screenshot folder is existed")
             // a new day begins, saving screenshots to new folder
-            let newScreenshotFolderPath = Repository.defaultFolderPathString + folderPathStringForChecking
-            tempFolderPathString = newScreenshotFolderPath
+            
+            // create new folder for new day's recording
+            creatFolderForTodayRecording()
+            // let newScreenshotFolderPath = Repository.defaultFolderPathString + folderPathStringForChecking
+            // tempFolderPathString = newScreenshotFolderPath
             // reset
-            Repository.dailyScreenshotFolderString = newScreenshotFolderPath
+            // Repository.dailyScreenshotFolderString = newScreenshotFolderPath
         }
         
         
@@ -183,6 +192,63 @@ class takeScreenshots{
         
         // increase the default counter: + 1
         DailyCounter.counter = DailyCounter.counter + 1
+        
+    }
+    
+    
+    @objc func takeANewScreenshotWithFormattedDateNameTesting(){
+        
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYY.MM.dd,HH-mm-ss"
+        let dateString = dateFormatter.string(from: date)
+        
+        // MARK: check date whenever take a new screenshot
+        let TodayDate = NSDate()
+        let calendar = NSCalendar.current
+        let TodayDay = calendar.component(.day, from: date)
+        let TodayMonth = calendar.component(.month, from: date)
+        let Todayyear = calendar.component(.year, from: date)
+        let folderPathStringForChecking = getCurrentMonth() + "-" + getCurrentDay() + "-" + getCurrentYear()
+        if(checkTodayScreenShotFolder(folderPath: folderPathStringForChecking)){
+            // folder existed, not a new day
+            // do nothing
+        } else{
+            // a new day begins, saving screenshots to new folder
+            let newScreenshotFolderPath = Repository.defaultFolderPathString + folderPathStringForChecking
+            tempFolderPathString = newScreenshotFolderPath
+            // reset
+            Repository.dailyScreenshotFolderString = newScreenshotFolderPath
+        }
+        
+        
+        
+        let task = Process()
+        task.launchPath = "/usr/sbin/screencapture"
+        var arguments = [String]();
+        arguments.append("-x")
+        
+        let tempScreenshotPerPathString = tempFolderPathString + "/" + dateString + ".jpg"
+        arguments.append(tempScreenshotPerPathString)
+        
+        print("screenshot path: " + tempScreenshotPerPathString)
+        
+        task.arguments = arguments
+        
+        let outpipe = Pipe()
+        task.standardOutput = outpipe
+        task.standardError = outpipe
+        
+        do {
+            try task.run()
+            
+        } catch {
+            print("failed in taking a new screenshot")
+            print(error)
+        }
+        
+        // wait until task is finished and exit
+        task.waitUntilExit()
         
     }
     

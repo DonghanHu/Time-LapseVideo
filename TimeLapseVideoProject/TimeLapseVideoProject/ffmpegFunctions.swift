@@ -84,7 +84,7 @@ class ffmpegClass {
         let createdVideoFilePath = outputFilePath + createdVideoName
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
-        let frameRateString = String(Setting.captureInterval)
+        let frameRateString = String(Setting.frameRate)
         // with old time-lapse video name
 //        process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
 //                             "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
@@ -144,7 +144,7 @@ class ffmpegClass {
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         
-        let frameRateString = String(Setting.captureInterval)
+        let frameRateString = String(Setting.frameRate)
         process.arguments = ["-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
                              "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
                              createdVideoFilePath]
@@ -187,7 +187,7 @@ class ffmpegClass {
         
         let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         
-        let frameRateString = String(Setting.captureInterval)
+        let frameRateString = String(Setting.frameRate)
         process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
                              "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
                              createdVideoFilePath]
@@ -229,7 +229,7 @@ class ffmpegClass {
         
         // let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         
-        let frameRateString = String(Setting.captureInterval)
+        let frameRateString = String(Setting.frameRate)
         process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
                              "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
                              createdVideoFilePath]
@@ -281,7 +281,7 @@ class ffmpegClass {
         
         // let outputFileName = outputFilePath + "output" + dateString + ".mp4"
         
-        let frameRateString = String(Setting.captureInterval)
+        let frameRateString = String(Setting.frameRate)
         process.arguments = ["-y", "-r", frameRateString, "-f", "image2", "-pattern_type", "glob", "-i", imagesFolderPath,
                              "-vcodec", "libx264", "-crf", "20", "-pix_fmt", "yuv420p",
                              createdVideoFilePath]

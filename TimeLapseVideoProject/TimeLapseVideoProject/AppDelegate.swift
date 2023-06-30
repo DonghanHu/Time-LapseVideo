@@ -127,6 +127,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             }
         }
         sleep(1)
+        
+        
+        // set notification for wake and sleep
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener:")), name: NSWorkspace.willSleepNotification, object: nil)
+
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener:")), name: NSWorkspace.didWakeNotification, object: nil)
+        
+        
+        
         // set notification for only one time
         
         let hasLaunchedKey = "HasLaunched"
@@ -170,11 +179,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             // do...
         }
         
-        timerMonitorThread = Thread(target: self, selector: #selector(timerValidationChecking), object: nil)
-        timerMonitorThread.start()
+        // remove thread
+//        timerMonitorThread = Thread(target: self, selector: #selector(timerValidationChecking), object: nil)
+//        timerMonitorThread.start()
 
     }
     
+    // using a thread to monitor the timer
     @objc func timerValidationChecking() {
         while(timerMonitorThread.isExecuting == true){
             if (takingScreenshotsTimer.isValid){
@@ -192,11 +203,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 }
                 
             }
+            
+        }
+    }
+    
+    // func for sleep/awake listener
+    func sleepListener(aNotification : NSNotification) {
+        if aNotification.name == NSWorkspace.willSleepNotification{
+            print("Going to sleep")
+        }else if aNotification.name == NSWorkspace.didWakeNotification{
+            print("Woke up")
+        }else{
+            print("Some other event other than the first two")
         }
     }
     
     @objc func getPendingNotifications() async {
-        var pendings = await un.pendingNotificationRequests()
+        let pendings = await un.pendingNotificationRequests()
         print("pendings: \(pendings.count)")
         print(pendings)
     }
@@ -263,8 +286,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
     
     @objc func quitApplication(){
-        timerMonitorThread.cancel()
-        print("thread is cancelled or not: ", timerMonitorThread.isCancelled)
+        // timerMonitorThread.cancel()
+        // print("thread is cancelled or not: ", timerMonitorThread.isCancelled)
         exit(0)
     }
     
@@ -756,9 +779,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Setting.captureInterval), repeats: true, block: { _ in
                 takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
             })
-//            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
-//                takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
-//            })
+
+//            self.takingScreenshotsTimer = Timer.scheduledTimer(timeInterval: TimeInterval(Setting.captureInterval), target: takeScreenshotsObject, selector: #selector(takeScreenshots.takeANewScreenshotWithFormattedDateNameTesting), userInfo: nil, repeats: true)
+            
             
         }else {
             startButton.title = "Start Recording"
@@ -983,7 +1006,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
     // function to quit the menu bar application
     func applicationWillTerminate(_ aNotification: Notification) {
-        timerMonitorThread.cancel()
+        // timerMonitorThread.cancel()
         // Insert code here to tear down your application
     }
 
