@@ -92,8 +92,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         // create a default folder for saving screenshots
         checkDefaultFolder(folderPath: defaultFolderPathString)
-        
-        let savingVideoFolderPathString = getHomePath() + "/Documents/" + "TimeLapseVideo/Videos/"
+        // Time-lapse Videos
+        // let savingVideoFolderPathString = getHomePath() + "/Documents/" + "TimeLapseVideo/Videos/"
+        let savingVideoFolderPathString = getHomePath() + "/Documents/" + "TimeLapseVideo/Time-lapse Videos/"
         checkDefaultFolder(folderPath: savingVideoFolderPathString)
         
         // take a testing screenshot while launching the application for asking request
@@ -167,7 +168,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // set default folder to save created time-lapse videos： Downloads folder
         // let defaultDownloadingVideosFolderPath = getHomePath() + "/Downloads/"
         // changed to "Documents/timelapsevideo"
-        let defaultDownloadingVideosFolderPath = getHomePath() + "/Documents/TimeLapseVideo/Videos/"
+        let defaultDownloadingVideosFolderPath = getHomePath() + "/Documents/TimeLapseVideo/Time-lapse Videos/"
         Repository.downloadingVideosFolderPathString = defaultDownloadingVideosFolderPath
         Repository.downloadingVideosFolderPathURL = URL(string: defaultDownloadingVideosFolderPath)
         
@@ -508,7 +509,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     // function to create all videos that are missing
     // code here
     @objc func createAllVideos(){
-        var videoFolder = getHomePath() + "/Documents/TimeLapseVideo/Videos/"
+        var videoFolder = getHomePath() + "/Documents/TimeLapseVideo/Time-lapse Videos/"
         var sceenshotFolderNumber: Int = 0
         var timelapseVideoNumber: Int = 0
         var timelapseVideoNameArray: [String] = []
@@ -584,7 +585,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     // function to open video folder
     @objc func openVideoFolder(){
-        let documentFolderPath = getHomePath() + "/Documents/TimeLapseVideo"
+        // Time-lapse Videos
+        let documentFolderPath = getHomePath() + "/Documents/TimeLapseVideo/Time-lapse Videos"
+        // let documentFolderPath = getHomePath() + "/Documents/TimeLapseVideo"
         if(FileManager.default.fileExists(atPath: documentFolderPath)){
             print("Target folder is already existed!")
             NSWorkspace.shared.open(
@@ -820,10 +823,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             
         }
         else{
-            print("Today, you haven't taken any screenshots yet!")
+            print("Today, you haven't taken any screenshots yet.")
             // do...
             let alert = NSAlert()
-            alert.messageText = "Today, you haven't taken any screenshots yet!"
+            alert.messageText = "Today, you haven't taken any screenshots yet."
             alert.informativeText = "Please remember to record your today activities. "
             alert.alertStyle = NSAlert.Style.warning
             alert.addButton(withTitle: "OK")

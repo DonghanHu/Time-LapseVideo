@@ -77,7 +77,7 @@ class ffmpegClass {
         
         // new name format of genearted Time-lapse videos
         let dateFormattermmddyyyy = DateFormatter()
-        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        dateFormattermmddyyyy.dateFormat = "MMddyyyy"
         let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
         
         let createdVideoName = "TimeLapseVideo" + dateString + ".mp4"
@@ -136,7 +136,7 @@ class ffmpegClass {
         
         // new name format of genearted Time-lapse videos
         let dateFormattermmddyyyy = DateFormatter()
-        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        dateFormattermmddyyyy.dateFormat = "MMddyyyy"
         let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
         
         let createdVideoName = "Temp" + dateString + ".mp4"
@@ -179,7 +179,7 @@ class ffmpegClass {
         
         // new name format of genearted Time-lapse videos
         let dateFormattermmddyyyy = DateFormatter()
-        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        dateFormattermmddyyyy.dateFormat = "MMddyyyy"
         let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
         
         let createdVideoName = "Temp" + dateString + ".mp4"
@@ -215,15 +215,12 @@ class ffmpegClass {
         let imagesFolderPath = inputFilePath + "/*?jpg"
 //
         let date = Date()
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "MM.dd,HH-mm-ss"
-//        let dateString = dateFormatter.string(from: date)
-    
+        print(date)
         // new name format of genearted Time-lapse videos
         let dateFormattermmddyyyy = DateFormatter()
-        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        dateFormattermmddyyyy.dateFormat = "MMddyyyy"
         let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
-        
+        print(dateStringmmddyyyy)
         let createdVideoName = "TimeLapseVideo" + dateStringmmddyyyy + ".mp4"
         let createdVideoFilePath = outputFilePath + createdVideoName
         
@@ -259,7 +256,7 @@ class ffmpegClass {
     
         // new name format of genearted Time-lapse videos
         let dateFormattermmddyyyy = DateFormatter()
-        dateFormattermmddyyyy.dateFormat = "mmddyyyy"
+        dateFormattermmddyyyy.dateFormat = "MMddyyyy"
         let dateStringmmddyyyy = dateFormattermmddyyyy.string(from: date)
         
         // srcFolderName format: xx-xx-xxxx
