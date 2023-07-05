@@ -69,6 +69,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     private var setVideoDownloadingPathWindowController: setVideoPath?
     private var setParametersController: videoWatchWindow?
     
+    // before go to sleep mode, if app is recording or not
+    private var previousRecordingStatus: Bool!
     // notification center
     let un = UNUserNotificationCenter.current()
     
@@ -129,11 +131,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
         sleep(1)
         
+        // initial value is false for not taking screenshots
+        previousRecordingStatus = false;
         
         // set notification for wake and sleep
-        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener:")), name: NSWorkspace.willSleepNotification, object: nil)
-
-        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener:")), name: NSWorkspace.didWakeNotification, object: nil)
+//        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener")), name: NSWorkspace.willSleepNotification, object: nil)
+//        NSWorkspace.shared.notificationCenter.addObserver(self, selector: Selector(("sleepListener")), name: NSWorkspace.didWakeNotification, object: nil)
+        
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(sleepListener(_:)),
+                                                              name: NSWorkspace.willSleepNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(sleepListener(_:)),
+                                                              name: NSWorkspace.didWakeNotification, object: nil)
         
         
         
@@ -195,7 +203,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 DispatchQueue.main.sync {
                     self.statusItem.button?.image = NSImage(named: "recordIcon");
                 }
-                
+            
             } else {
                 // print("timer is stopped")
                 startButton.title = "Start Recording"
@@ -209,15 +217,93 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
     
     // func for sleep/awake listener
-    func sleepListener(aNotification : NSNotification) {
-        if aNotification.name == NSWorkspace.willSleepNotification{
+    @objc private func sleepListener(_ aNotification: Notification) {
+        print("listening to sleep")
+        if aNotification.name == NSWorkspace.willSleepNotification {
             print("Going to sleep")
-        }else if aNotification.name == NSWorkspace.didWakeNotification{
+            if (takingScreenshotsTimer.isValid) {
+                // stop the timer
+                print("recording and stop")
+                self.takingScreenshotsTimer.invalidate()
+                previousRecordingStatus = true
+                startButton.title = "Start Recording"
+//                startButton.title = "Start Recording"
+//                DispatchQueue.main.sync {
+//                    self.statusItem.button?.image = NSImage(named: "videoIcon");
+//                }
+                
+            } else {
+                previousRecordingStatus = false;
+            }
+            
+        } else if aNotification.name == NSWorkspace.didWakeNotification {
+            // NSWorkspace.screensDidWakeNotification
             print("Woke up")
-        }else{
+            if(previousRecordingStatus == true){
+                // restart the timer for recording
+                
+                print("restart the recording")
+                resumePreviousRecording()
+                // reset to inital value
+                previousRecordingStatus = false
+                
+//                DispatchQueue.main.sync {
+//                    self.statusItem.button?.image = NSImage(named: "recordIcon");
+//                }
+            } else {
+                print("previousRecordingStatus: ", print(previousRecordingStatus!))
+                // do nothing
+            }
+        } else {
             print("Some other event other than the first two")
         }
     }
+    
+    func resumePreviousRecording() {
+        print("resumePreviousRecording function")
+        // compare default date string with current date and reset default values
+        let currentDateString = getCurrentDate()
+        // if two strings are not equal, reset default values
+        if DailyCounter.dateStr != currentDateString {
+            DailyCounter.dateStr = currentDateString
+            DailyCounter.counter = 0
+            DailyNotification.dateStr = currentDateString
+            DailyNotification.wathchedTimeLapseVideo = false
+        }
+        // set button attributes
+        let startButtonTitle = startButton.title
+        print("startButtonTitle: ", startButtonTitle)
+        if (startButtonTitle == "Start Recording"){
+            startButton.title = "Stop Recording"
+ 
+            self.statusItem.button?.image = NSImage(named: "recordIcon");
+            // set the recording flag to true
+            recordingFlag = true
+            let takeScreenshotsObject = takeScreenshots()
+            takeScreenshotsObject.creatFolderForTodayRecording()
+            
+            takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
+
+            // not taking a ascreenshot at the time when click this button
+            self.takingScreenshotsTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Setting.captureInterval), repeats: true, block: { _ in
+                takeScreenshotsObject.takeANewScreenshotWithFormattedDateName()
+            })
+            
+        }else {
+            startButton.title = "Start Recording"
+            // set the recording flag to false
+            self.statusItem.button?.image = NSImage(named: "videoIcon");
+            recordingFlag = false
+            
+            // stop the timer
+            self.takingScreenshotsTimer.invalidate()
+        }
+        print("timer validation: ", self.takingScreenshotsTimer.isValid)
+    }
+    
+    
+    
+    
     
     @objc func getPendingNotifications() async {
         let pendings = await un.pendingNotificationRequests()
@@ -753,7 +839,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     // first button action
     @objc func didTapOne() {
-        
+        print("didtapone function")
         // compare default date string with current date and reset default values
         let currentDateString = getCurrentDate()
         // if two strings are not equal, reset default values
